@@ -4,13 +4,15 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "watch" :"tsc --watch",
+    "watch": "tsc --watch",
     "start": "npx ts-node app.ts"
   },
   "author": "Konrad Bolesławski",
   "license": "ISC",
   "dependencies": {
     "express": "^4.18.2",
+    "sequelize": "^6.26.0",
+    "sqlite3": "^5.1.2",
     "tslib": "^2.4.1",
     "typescript": "^4.9.3"
   }

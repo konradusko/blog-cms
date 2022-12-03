@@ -1,0 +1,17 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "watch" :"tsc --watch",
+    "start": "npx ts-node app.ts"
+  },
+  "author": "Konrad Bolesławski",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2",
+    "tslib": "^2.4.1",
+    "typescript": "^4.9.3"
+  }
+}

@@ -1,22 +1,25 @@
+import {app} from "./init_server/init_application";
+import {initialize_database} from "./database/init_database";
+const PORT = 3000
+import {Database} from 'sqlite3';
+import {create_table_and_promisify} from "./database/async/async_sqlite";
+import {sqlite_database} from "./database/async/async_sqlite";
+import { create_tables } from "./database/create_tables";
+const init_server = async () => {
+  try {
+    const database = await initialize_database()
+    const create_promisify = create_table_and_promisify(database as Database)
+    if (!create_promisify) 
+        throw 'Error while creating promisify sqlite'
+      
+    await create_tables()
 
-import { app } from "./init_server/init_application"; 
-import { database,DataTypes } from "./database/init_database";
-
-
-
-database.sync({ alter: true }).then((res)=>{
-    const PORT = 3000
-   const User =  database.define("users", {
-        name: {
-          type: DataTypes.STRING
-        }
-      });
-    console.log(User)
-    // User.create({name:'tet'})
-    app.listen(PORT,()=>{
+    app.listen(PORT, () => {
         console.log(`App listen on port ${PORT}`)
     })
-})
-.catch((er)=>{
-    console.error('Brak połączenia z bazą danych')
-})
+  } catch (error) {
+      console.log(error)
+  }
+    
+}
+init_server()

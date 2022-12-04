@@ -5,6 +5,7 @@ import {Database} from 'sqlite3';
 import {create_table_and_promisify} from "./database/async/async_sqlite";
 import { create_tables } from "./database/create_tables";
 import { create_admin_user } from "./init_server/init_admin_user";
+import './routers/panel/auth/login_get_page'
 const init_server = async () => {
   try {
     //inicjowanie bazy danych

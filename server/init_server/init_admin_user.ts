@@ -1,6 +1,5 @@
 import {sqlite_database} from "../database/async/async_sqlite";
 import {Role} from "../enums/role_enum";
-import {User} from "../interface/user";
 import bcrypt from 'bcrypt'
 import fs from 'fs'
 import crypto from 'crypto'
@@ -20,7 +19,7 @@ export const create_admin_user = () => new Promise(async (res, rej) => {
                 null,
                 'admin',
                 await bcrypt.hash(password, 10),
-                'your_email',
+                'admin',
                 formatDate(),
                 Role.admin
             ]

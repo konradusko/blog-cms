@@ -13,9 +13,9 @@ const app = express()
 app.use(express.static(path.join(__dirname, 'public')));
 async function create_vite_server_node() {
     const AUTH_PORT = 3000
-    const local_server = `http://localhost:${AUTH_PORT}`
+    const local_server_nodejs = `http://localhost:${AUTH_PORT}`
     
-
+    app.post('/admin/login',proxy(`${local_server_nodejs}/admin/login`))
     const vite = await createViteServer({
         server: {
             middlewareMode: true

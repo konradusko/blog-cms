@@ -8,4 +8,4 @@ app.get('/admin/login',(req:Request,res:Response)=>{
 })
 
 
-app.post('/admin/login',create_rate_limit(config.login),post_req_login)
+app.post('/admin/login',create_rate_limit(config.login_rate_limit),post_req_login)

@@ -14,14 +14,15 @@ export const create_admin_user = () => new Promise(async (res, rej) => {
             const password = crypto
                 .randomBytes(64)
                 .toString('hex')
-            const sql_insert_admin = `INSERT INTO Users VALUES (?,?,?,?,?,?)`
+            const sql_insert_admin = `INSERT INTO Users VALUES (?,?,?,?,?,?,?)`
             const values_insert_admin = [
                 null,
                 'admin',
                 await bcrypt.hash(password, 10),
                 'admin',
                 formatDate(),
-                Role.admin
+                Role.user,
+                true
             ]
             await sqlite_database
                 ?.run_promisify(sql_insert_admin, values_insert_admin)

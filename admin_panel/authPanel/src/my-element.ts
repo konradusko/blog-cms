@@ -6,8 +6,8 @@ enum Pages{
   login='login',
   forgetPassword='forgetPassword'
 }
-@customElement('my-element')
-export class MyElement extends LitElement {
+@customElement('login-element')
+export class loginElement extends LitElement {
   public static styles = [unsafeCSS(style), unsafeCSS(animate)]
   @property()
   current_page:Pages =Pages.login
@@ -15,8 +15,8 @@ export class MyElement extends LitElement {
   
 
   //dla logowania
-  @query('#input_email_login')
-  input_email_login?:HTMLInputElement
+  @query('#input_login_login')
+  input_login_login?:HTMLInputElement
   @query('#input_password_login')
   input_password_login?:HTMLInputElement
   //przycik zaloguj
@@ -42,19 +42,35 @@ export class MyElement extends LitElement {
     button.disabled=false
   }
   login_fn(){
-    if(!this.login_button || !this.input_email_login || !this.input_password_login)
+    if(!this.login_button || !this.input_login_login || !this.input_password_login)
       return
     this.delete_error();
     this.disable_button(this.login_button )
-    if(this.input_email_login?.value.length ==0){
+    if(this.input_login_login.value.length ==0){
       this.enable_button(this.login_button)
-      return this.create_error(this.input_email_login ,'Proszę podać adres email')
+      return this.create_error(this.input_login_login ,'Proszę podać adres email')
     }
     if(this.input_password_login.value.length ==0){
       this.enable_button(this.login_button)
       return this.create_error(this.input_password_login ,'Proszę podać adres email')
     }
- 
+    fetch(`/admin/login`, {
+      method: 'POST',
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        login:this.input_login_login.value,
+        password:this.input_password_login.value
+      })
+    }).then((res) => res.json())
+    .then((res)=>{
+      console.log(res)
+    })
+    .catch((er)=>{
+      console.log(er)
+    })
   }
   render() {
     return html`
@@ -93,7 +109,7 @@ export class MyElement extends LitElement {
               <input
                 type="text"
                 class="form-control block w-full px-4 py-2 text-xl font-normal text-gray-700 bg-white bg-clip-padding border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
-                id="input_email_login"
+                id="input_login_login"
                 placeholder="Adres email"
               />
             </div>
@@ -139,6 +155,6 @@ export class MyElement extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'my-element': MyElement
+    'login-element': loginElement
   }
 }

@@ -4,5 +4,6 @@ CREATE TABLE IF NOT EXISTS Users (
                     password TEXT NOT NULL, 
                     email TEXT NOT NULL UNIQUE,
                     createdAt TEXT NOT NULL,
-                    role TEXT NOT NULL
+                    role TEXT NOT NULL,
+                    confirmEmail BOOLEAN NOT NULL
                     )

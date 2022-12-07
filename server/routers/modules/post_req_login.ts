@@ -1,5 +1,4 @@
 import { Router,Request,Response } from "express";
-import { app } from "../../init_server/init_application";
 import {ajv,DefinedError} from '../../modules/ajv'
 import { ajv_schema_login_post } from "../../ajv_schemas/login";
 import { sqlite_database } from "../../database/async/async_sqlite";
@@ -14,23 +13,23 @@ interface Body{
     login:string,
     password:string
 }
-app.post('/admin/login',async(req:Request,res:Response)=>{
+post_req_login.post('/admin/login',async(req:Request,res:Response)=>{
     try {
         const body:Body = req.body
         const validate_request = validate_ajv(body)
         //Body ma błędny format
         if(!validate_request)
-            return res.status(400).json({ message: (validate_ajv.errors as DefinedError[])[0].message, error: true })
+            return res.status(400).json({ message: (validate_ajv.errors as DefinedError[])[0].message, error: true,redirect:false })
 
         //Po pierwsze sprawdzam czy taki użytkownik jest w systemie
         const sql_find_user = `SELECT * FROM Users WHERE login = '${body.login}'`
         const user = await sqlite_database
         ?.get_promisify(sql_find_user )
         if(!user)
-            return res.status(400).json({message:'Taki uzytkownik nie istnieje',error:true})
+            return res.status(400).json({message:'Taki uzytkownik nie istnieje',error:true,redirect:false})
         //Sprawdzam czy hasło jest podane
         if(!(await bcrypt.compare(body.password,(user as User).password)))
-            return res.status(400).json({message:'Podane hasło jest błędne',error:true})
+            return res.status(400).json({message:'Podane hasło jest błędne',error:true,redirect:false})
         //Tworze token i dodaje go do bazy danych
         
         const token = await create_token_and_add_session((user as User).id,(user as User).login)
@@ -41,7 +40,7 @@ app.post('/admin/login',async(req:Request,res:Response)=>{
         }).status(200).json({ message: 'Logowanie przebiegło pomyślnie', error: false,redirect:true })
 
     } catch (error) {
-        return res.status(400).json({message:'Wystąpił błąd',error:true})
+        return res.status(400).json({message:'Wystąpił błąd',error:true,redirect:false})
     }
 })
 export{

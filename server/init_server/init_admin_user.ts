@@ -4,25 +4,30 @@ import bcrypt from 'bcrypt'
 import fs from 'fs'
 import crypto from 'crypto'
 import {formatDate} from "../modules/create_date";
+import { config } from "../modules/read_config";
+import { Tables } from "../enums/tables_enum";
 export const create_admin_user = () => new Promise(async (res, rej) => {
     try {
 
-        const sql = `SELECT * FROM Users WHERE login = '${Role.admin}'`
+        const sql = `SELECT * FROM ${Tables.Users} WHERE login = 'admin'`
         const find_admin = await sqlite_database
             ?.get_promisify(sql)
         if (!find_admin) {
             const password = crypto
                 .randomBytes(64)
                 .toString('hex')
-            const sql_insert_admin = `INSERT INTO Users VALUES (?,?,?,?,?,?,?)`
+            const sql_insert_admin = `INSERT INTO Users VALUES (?,?,?,?,?,?,?,?,?,?)`
             const values_insert_admin = [
                 null,
                 'admin',
                 await bcrypt.hash(password, 10),
-                'admin',
+                config.system.root_user_email,
                 formatDate(),
-                Role.user,
-                true
+                Role.root,
+                true,
+                "",
+                "",
+                ""
             ]
             await sqlite_database
                 ?.run_promisify(sql_insert_admin, values_insert_admin)

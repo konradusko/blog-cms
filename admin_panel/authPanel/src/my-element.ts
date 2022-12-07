@@ -45,7 +45,7 @@ export class loginElement extends LitElement {
     if(!this.login_button || !this.input_login_login || !this.input_password_login)
       return
     this.delete_error();
-    this.disable_button(this.login_button )
+    // this.disable_button(this.login_button )
     if(this.input_login_login.value.length ==0){
       this.enable_button(this.login_button)
       return this.create_error(this.input_login_login ,'Proszę podać adres email')

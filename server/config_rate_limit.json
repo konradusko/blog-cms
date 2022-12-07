@@ -1,9 +1,0 @@
-{
-    "login_rate_limit":{
-        "max_request":5,
-        "time_in_minutes":15,
-        "message":"Za dużo zapytań, spróbuj ponownie",
-        "standardHeaders":true,
-        "legacyHeaders":false
-    }
-}

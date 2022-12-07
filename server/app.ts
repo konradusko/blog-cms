@@ -5,10 +5,16 @@ import {Database} from 'sqlite3';
 import {create_table_and_promisify} from "./database/async/async_sqlite";
 import { create_tables } from "./database/create_tables";
 import { create_admin_user } from "./init_server/init_admin_user";
-import './routers/panel/auth/login_get_page'
+import './routers/panel/auth/routers_login'
+import './modules/read_config'
+import fs from 'fs'
+if(!fs.existsSync('./sqlite')){
+  fs.mkdirSync('./sqlite')
+}
 const init_server = async () => {
   try {
     //inicjowanie bazy danych
+    console.log('a tutaj doszlismy')
     const database:Database = await initialize_database()
     //tworzenie promisow dla sql
     const create_promisify = create_table_and_promisify(database as Database)
@@ -16,10 +22,10 @@ const init_server = async () => {
         throw 'Error while creating promisify sqlite'
     //tworzenie tabel dla sqlite
     await create_tables()
-
+ 
     //inicjowanie użytkownika admin
     await create_admin_user()
-
+ 
     app.listen(PORT, () => {
         console.log(`App listen on port ${PORT}`)
     })

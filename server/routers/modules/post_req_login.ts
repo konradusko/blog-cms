@@ -25,14 +25,18 @@ post_req_login.post('/admin/login',async(req:Request,res:Response)=>{
             return res.status(400).json({ message: (validate_ajv.errors as DefinedError[])[0].message, error: true,redirect:false })
 
         //Po pierwsze sprawdzam czy taki użytkownik jest w systemie
-        const sql_find_user = `SELECT * FROM Users WHERE login = '${body.login}'`
+        const sql_find_user = `SELECT * FROM Users WHERE login = ?`
+        const sql_values = [body.login]
         const user = await sqlite_database
-        ?.get_promisify(sql_find_user )
+        ?.get_promisify(sql_find_user ,sql_values)
         if(!user)
-            return res.status(400).json({message:'Taki uzytkownik nie istnieje',error:true,redirect:false})
+            return res.status(401).json({message:'Taki uzytkownik nie istnieje',error:true,redirect:false})
         //Sprawdzam czy hasło jest podane
         if(!(await bcrypt.compare(body.password,(user as User).password)))
-            return res.status(400).json({message:'Podane hasło jest błędne',error:true,redirect:false})
+            return res.status(401).json({message:'Podane hasło jest błędne',error:true,redirect:false})
+        //Sprawdzam czy adres email został potwierdzony
+        if((user as User).confirmEmail == false)
+            return res.status(200).json({message:'Proszę potwierdzić adres email',error:false,redirect:false})
         //Tworze token i dodaje go do bazy danych
         
         const token = await create_token_and_add_session((user as User).id,(user as User).login)

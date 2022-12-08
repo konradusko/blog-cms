@@ -9,9 +9,10 @@ import { Tables } from "../enums/tables_enum";
 export const create_admin_user = () => new Promise(async (res, rej) => {
     try {
 
-        const sql = `SELECT * FROM ${Tables.Users} WHERE login = 'admin'`
+        const sql = `SELECT * FROM ${Tables.Users} WHERE login = ?`
+        const values_sql = ['admin']
         const find_admin = await sqlite_database
-            ?.get_promisify(sql)
+            ?.get_promisify(sql,values_sql)
         if (!find_admin) {
             const password = crypto
                 .randomBytes(64)

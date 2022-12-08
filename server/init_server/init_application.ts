@@ -23,5 +23,8 @@ app.set('view engine', 'ejs')
 app.engine('html', ejs.renderFile);
 app.use(cookieParser())
 app.use(express.json())
-app.use(express.static(path.join(__dirname, 'public')));
+app.set('trust proxy', 1);
+app.use("/public", express.static(path.join(path.resolve(), '/public')));
+app.use("/ftp", express.static(path.join(path.resolve(), '/ftp')));
+
 export{app}

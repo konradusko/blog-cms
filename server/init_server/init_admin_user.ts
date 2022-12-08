@@ -3,7 +3,7 @@ import {Role} from "../enums/role_enum";
 import bcrypt from 'bcrypt'
 import fs from 'fs'
 import crypto from 'crypto'
-import {formatDate} from "../modules/create_date";
+import {createTime} from "../modules/create_time";
 import { config } from "../modules/read_config";
 import { Tables } from "../enums/tables_enum";
 export const create_admin_user = () => new Promise(async (res, rej) => {
@@ -17,13 +17,13 @@ export const create_admin_user = () => new Promise(async (res, rej) => {
             const password = crypto
                 .randomBytes(64)
                 .toString('hex')
-            const sql_insert_admin = `INSERT INTO Users VALUES (?,?,?,?,?,?,?,?,?,?)`
+            const sql_insert_admin = `INSERT INTO ${Tables.Users} VALUES (?,?,?,?,?,?,?,?,?,?)`
             const values_insert_admin = [
                 null,
                 'admin',
                 await bcrypt.hash(password, 10),
                 config.system.root_user_email,
-                formatDate(),
+                createTime(),
                 Role.root,
                 true,
                 "",

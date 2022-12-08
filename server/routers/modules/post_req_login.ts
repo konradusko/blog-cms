@@ -6,6 +6,8 @@ import { User } from "../../interface/user";
 import bcrypt from 'bcrypt'
 import { create_token_and_add_session } from "../../modules/createToken_login";
 import { config } from "../../modules/read_config";
+import { create_log } from "../../modules/create_log";
+import { Logs } from "../../enums/logs_enum";
 const post_req_login:Router = Router()
 
 const validate_ajv = ajv.compile(ajv_schema_login_post)
@@ -40,6 +42,8 @@ post_req_login.post('/admin/login',async(req:Request,res:Response)=>{
         //Tworze token i dodaje go do bazy danych
         
         const token = await create_token_and_add_session((user as User).id,(user as User).login)
+        const log_message = `Użytkownik o id ${body.login} zalogował się do serwisu`
+        create_log(Logs.log_in,body.login,log_message)
         return res.cookie("token", token, {
             httpOnly: true,
             secure: true,

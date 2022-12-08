@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS Logs (
                     userLogin TEXT NOT NULL,
                     message TEXT NOT NULL,
                     createAt TEXT NOT NULL,
-                    readed BOOLEAN NOT NULL
+                    readed BOOLEAN NOT NULL,
                     userID INTEGER NOT NULL,
-                    Foreign Key (userID) REFERENCES (id)
+                    FOREIGN KEY (userID) REFERENCES Users(id)
                     )

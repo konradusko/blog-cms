@@ -43,7 +43,7 @@ post_req_login.post('/admin/login',async(req:Request,res:Response)=>{
         
         const token = await create_token_and_add_session((user as User).id,(user as User).login)
         const log_message = `Użytkownik o id ${body.login} zalogował się do serwisu`
-        create_log(Logs.log_in,body.login,log_message)
+        create_log(Logs.log_in,body.login,log_message,(user as User).id)
         return res.cookie("token", token, {
             httpOnly: true,
             secure: true,

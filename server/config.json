@@ -1,0 +1,25 @@
+{
+    "login_rate_limit":{
+        "max_request":5,
+        "time_in_minutes":15,
+        "message":"Za dużo zapytań, spróbuj ponownie",
+        "standardHeaders":true,
+        "legacyHeaders":false
+    },
+    "forget_password_rate_limit":{
+        "max_request":5,
+        "time_in_minutes":60,
+        "message":"Za dużo zapytań, spróbuj ponownie",
+        "standardHeaders":true,
+        "legacyHeaders":false
+    },
+    "system":{
+        "root_user_email":"example@gmailc.om",
+        "token_setting_user_session":{
+            "expiresIn_in_minutes":240,
+            "algorithm":"HS256",
+            "private_key":"miewn8f3gf79wg7fwgef9egwfg9ewg73g72fg237gfh23hbvurehg6g699g7329gg723g2"
+        }   
+    }
+
+}

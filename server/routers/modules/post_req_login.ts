@@ -13,6 +13,9 @@ interface Body{
     login:string,
     password:string
 }
+/**
+ * To do zbudowac dziennik zdarzen dla logowania
+ */
 post_req_login.post('/admin/login',async(req:Request,res:Response)=>{
     try {
         const body:Body = req.body

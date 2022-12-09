@@ -2,12 +2,30 @@ import { LitElement,  html ,unsafeCSS} from 'lit'
 import { customElement, property, query} from 'lit/decorators.js'
 import style from './index.css'
 import animate from './animate.css'
-
-
+import {Pages} from '../interfaces/enums_pages'
+//importowanie stron
+import './pages/setting_page'
 @customElement('panel-element')
 export class PanelElement extends LitElement {
   public static styles = [unsafeCSS(style), unsafeCSS(animate)]
-
+  //obecna strona
+  @property()
+  pages ={
+    "home_page":true,
+    "event_log_page":false,
+    "account_page":false,
+    "settings_page":false
+  }
+  @property()
+  current_page:Pages = Pages.home_page
+  change_page(e:any){
+    const _new_page:Pages = e.target.getAttribute('data-page')
+    if(!_new_page)
+      return
+    this.pages[_new_page] = true
+    this.pages[this.current_page] = false
+    this.current_page = _new_page
+    }
   render() {
     return html`
     <div class="md:fixed md:w-full md:top-0 md:z-20 flex flex-row flex-wrap items-center bg-white p-6 border-b border-gray-300  h-[5rem]">
@@ -15,7 +33,7 @@ export class PanelElement extends LitElement {
     <!-- logo -->
     <div class="flex-none w-56 flex flex-row items-center">
       <img src="img/logo.png" class="w-10 flex-none">
-      <strong class="capitalize ml-1 flex-1">cleopatra</strong>
+      <strong class="capitalize ml-1 flex-1">CMS</strong>
 
       <button id="sliderBtn" class="flex-none text-right text-gray-900 hidden md:block">
         <i class="fad fa-list-ul"></i>
@@ -57,17 +75,21 @@ export class PanelElement extends LitElement {
     <div class="flex flex-col">
 
   
-      <p class="uppercase text-xs text-gray-600 mb-4 tracking-wider">homes</p>
+      <p class="uppercase text-xs text-gray-600 mb-4 tracking-wider">Blog</p>
 
-      <!-- link -->
-      <a href="./index.html" class="mb-3 capitalize font-medium text-sm hover:text-teal-600 transition ease-in-out duration-500">
-        <i class="fad fa-chart-pie text-xs mr-2"></i>                
-        test
-      </a>
-      <!-- end link -->
-
+    
+      <button data-page="${Pages.home_page}" @click="${this.change_page}" class="mb-3 capitalize font-medium text-sm hover:text-teal-600 transition ease-in-out duration-500 text-left ml-1.5">
+        Strona główna
+      </button>
       
-      
+      <p class="uppercase text-xs text-gray-600 mb-4 tracking-wider">System</p>
+      <button data-page="${Pages.event_log_page}" @click="${this.change_page}" class="mb-3 capitalize font-medium text-sm hover:text-teal-600 transition ease-in-out duration-500 text-left ml-1.5">
+          Dziennik zdarzeń
+      </button>
+      <button data-page="${Pages.settings_page}" @click="${this.change_page}" class="mb-3 capitalize font-medium text-sm hover:text-teal-600 transition ease-in-out duration-500 text-left ml-1.5">
+         Ustawienia Systemowe
+      </button>
+      <p class="uppercase text-xs text-gray-600 mb-4 tracking-wider">System</p>
 
     </div>
     <!-- end sidebar content -->
@@ -77,10 +99,11 @@ export class PanelElement extends LitElement {
 
   <!-- strat content -->
   <div class="bg-gray-100 flex-1 p-6 md:mt-16 "> 
-
-    
-
-
+    <div class="  w-full  h-[calc(100vh_-_8rem)]">
+    ${this.current_page == Pages.home_page?html`home_page`:html``}
+    ${this.current_page == Pages.settings_page?html`<setting-page></setting-page>`:html``}
+    ${this.current_page == Pages.event_log_page?html`logi`:html``}
+    <div>
   </div>
   <!-- end content -->
 

@@ -26,5 +26,25 @@ export const ajv_schema_smtp = {
         _: 'Uzupełnij wszystkie dane',
     },
 }
-
+export const ajv_schema_delete_get_data_smtp = {
+    type: "object",
+    allOf: [
+        {
+            properties: {
+                "type":{
+                    enum:[RoleSmtp.newsletter,RoleSmtp.system]
+                }
+            },
+            additionalProperties: false,
+        },
+    ],
+    required: ["type"],
+    errorMessage: {
+        type: "Dane powinny być obiektem!",
+        properties: {
+            type:"Należy podać poprawny typ"
+        },
+        _: 'Uzupełnij wszystkie dane',
+    },
+}
 

@@ -3,5 +3,5 @@ CREATE TABLE IF NOT EXISTS Smtp (
                     host TEXT NOT NULL,
                     user TEXT NOT NULL,
                     password TEXT NOT NULL,
-                    role TEXT NOT NULL
+                    role TEXT NOT NULL UNIQUE
                     )

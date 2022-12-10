@@ -4,7 +4,7 @@ import style from '../index.css'
 import animate from '../animate.css'
 import { Pages_settings } from '../../interfaces/enums_pages'
 import './setting_page_options/domain_option'
-import './setting_page_options/smtp_system_option'
+import './setting_page_options/smtp'
 @customElement('setting-page')
 export class SettingPage extends LitElement {
   public static styles = [unsafeCSS(style), unsafeCSS(animate)]
@@ -97,7 +97,7 @@ export class SettingPage extends LitElement {
     }else if(this.current_page == Pages_settings.domainSetting){
       return html `<settingdomain-page></settingdomain-page>`
     }else if(this.current_page == Pages_settings.smtp_system_mail){
-        return html`<settingsmtpsystem-page @set-Page="${this.setPage}"></settingsmtpsystem-page>`
+        return html`<settingsmtp-page @set-Page="${this.setPage}" .smtp_type="${Pages_settings.smtp_system_mail}"></settingsmtp-page>`
     }else{
       return html``
     }

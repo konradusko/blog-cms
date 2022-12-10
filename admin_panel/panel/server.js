@@ -14,7 +14,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 async function create_vite_server_node() {
     const AUTH_PORT = 3000
     const local_server_nodejs = `http://localhost:${AUTH_PORT}`
-    
+    app.post('/api/v1/add/smtp',proxy(`${local_server_nodejs}/api/v1/add/smtp`))
     const vite = await createViteServer({
         server: {
             middlewareMode: true

@@ -28,14 +28,14 @@ export class PanelElement extends LitElement {
     }
   render() {
     return html`
-    <div class="md:fixed md:w-full md:top-0 md:z-20 flex flex-row flex-wrap items-center bg-white p-6 border-b border-gray-300  h-[5rem]">
+    <div class="  flex flex-row flex-wrap items-center bg-white p-6 border-b border-gray-300  h-[5rem]">
     
     <!-- logo -->
     <div class="flex-none w-56 flex flex-row items-center">
       <img src="img/logo.png" class="w-10 flex-none">
       <strong class="capitalize ml-1 flex-1">CMS</strong>
 
-      <button id="sliderBtn" class="flex-none text-right text-gray-900 hidden md:block">
+      <button id="sliderBtn" class="flex-none text-right text-gray-900 hidden">
         <i class="fad fa-list-ul"></i>
       </button>
     </div>
@@ -68,7 +68,7 @@ export class PanelElement extends LitElement {
 <div  class="h-[calc(100vh_-_5rem)] flex flex-row flex-wrap">
   
     <!-- start sidebar -->
-  <div  class="relative flex flex-col flex-wrap bg-white border-r border-gray-300 p-6 flex-none w-64 md:-ml-64 md:fixed md:top-0 md:z-30 md:h-screen md:shadow-xl animated faster">
+  <div  class="h-[calc(100vh_-_5rem)] relative flex flex-col flex-wrap bg-white border-r border-gray-300 p-6 flex-none w-64   md:top-0 md:z-30  md:shadow-xl animated faster">
     
 
     <!-- sidebar content -->
@@ -98,7 +98,7 @@ export class PanelElement extends LitElement {
   <!-- end sidbar -->
 
   <!-- strat content -->
-  <div class="bg-gray-100 flex-1 p-6 md:mt-16 "> 
+  <div class="bg-gray-100 flex-1 p-6  "> 
     <div class="  w-full  h-[calc(100vh_-_8rem)]">
     ${this.current_page == Pages.home_page?html`home_page`:html``}
     ${this.current_page == Pages.settings_page?html`<setting-page></setting-page>`:html``}

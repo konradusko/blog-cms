@@ -3,6 +3,12 @@ import { customElement, property, query} from 'lit/decorators.js'
 import style from '../../index.css'
 import animate from '../../animate.css'
 import { Pages_settings } from '../../../interfaces/enums_pages'
+interface Smtp_object  {
+  host:string,
+  password:string,
+  role:string,
+  user:string
+}
 interface Response_smtp{
   message:string,
   error:boolean,

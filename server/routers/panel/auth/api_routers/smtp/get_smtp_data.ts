@@ -19,10 +19,10 @@ post_get_smtp_data.post('/api/v1/get/smtp',async(req:Request,res:Response)=>{
         if(!validate_request)
             return res.status(400).json({ message: (validate_ajv.errors as DefinedError[])[0].message, error: true })
 
-        const sql_query_get_data = `SELECT * FROM ${Tables.Smtp} WHERE role = ? or role = ?`
-        const sql_values_get_data = [body.type, RoleSmtp.newsletter]
+        const sql_query_get_data = `SELECT host,user,password,role FROM ${Tables.Smtp} WHERE role = ?`
+        const sql_values_get_data = [body.type]
         try {
-            const smtp =  await sqlite_database?.run_promisify(sql_query_get_data,sql_values_get_data)
+            const smtp =  await sqlite_database?.get_promisify(sql_query_get_data,sql_values_get_data)
             console.log(smtp,'to jest to')
             return res.status(200).json({message:'Dane zostały pobrane',error:false,data:smtp == undefined?null:smtp})
         } catch (error) {

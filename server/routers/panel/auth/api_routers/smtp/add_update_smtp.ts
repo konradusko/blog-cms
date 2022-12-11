@@ -5,6 +5,8 @@ import { Tables } from "../../../../../enums/tables_enum";
 import { ajv, DefinedError} from "../../../../../modules/ajv";
 import { ajv_schema_smtp } from "../../../../../ajv_schemas/smtp_system";
 import { Smtp_interface } from "../../../../../interface/system_smtp";
+import { create_log } from "../../../../../modules/create_log";
+import { Logs } from "../../../../../enums/logs_enum";
 const post_smtp_add_update:Router = Router()
 const validate_ajv = ajv.compile(ajv_schema_smtp)
 interface Body{
@@ -13,6 +15,7 @@ interface Body{
     user:string,
     type:RoleSmtp
 }
+//**TO DO Create logs */
 post_smtp_add_update.post('/api/v1/add/smtp',async(req:Request,res:Response)=>{
     console.log(req.body)
     try {
@@ -36,6 +39,8 @@ post_smtp_add_update.post('/api/v1/add/smtp',async(req:Request,res:Response)=>{
             ]
             try {
                 await sqlite_database?.run_promisify(sql_query_add_smtp,sql_values_add_smtp)
+                const message_log = `Konfiguracja Smtp dla maili ${body.type == RoleSmtp.newsletter?`newslettera`:'systemowych'} została dodana`
+                create_log(Logs.add_smtp_config,res.locals.user.login,message_log,res.locals.user.id)
                 return res.status(200).json({message:'Konfiguracja została zapisana',error:false})
             } catch (error) {
                 return res.status(400).json({message:'Wystąpił błąd podczas zapisywania konfiguracji',error:true})
@@ -49,6 +54,8 @@ post_smtp_add_update.post('/api/v1/add/smtp',async(req:Request,res:Response)=>{
             const sql_query_update_smtp_VALUES = [body.host,body.user,body.password,body.type]
             try {
                 await sqlite_database?.run_promisify(sql_query_update_smtp,sql_query_update_smtp_VALUES)
+                const message_log = `Konfiguracja Smtp dla maili ${body.type == RoleSmtp.newsletter?`newslettera`:'systemowych'} zostało zaktualizowane`
+                create_log(Logs.update_smtp_config,res.locals.user.login,message_log,res.locals.user.id)
                 return res.status(200).json({message:'Nowa konfiguracja została zapisana',error:false})
             } catch (error) {
                 return res.status(400).json({message:'Wystąpił błąd podczas zapisywania konfiguracji',error:true})

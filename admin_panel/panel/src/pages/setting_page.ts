@@ -99,7 +99,7 @@ export class SettingPage extends LitElement {
     }else if(this.current_page == Pages_settings.smtp_system_mail){
         return html`<settingsmtp-page @set-Page="${this.setPage}" .smtp_type="${Pages_settings.smtp_system_mail}"></settingsmtp-page>`
     }else{
-      return html``
+      return html`<settingsmtp-page @set-Page="${this.setPage}" .smtp_type="${Pages_settings.smtp_newsletter}"></settingsmtp-page>`
     }
   
   }

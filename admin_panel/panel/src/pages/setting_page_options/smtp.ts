@@ -3,12 +3,23 @@ import { customElement, property, query} from 'lit/decorators.js'
 import style from '../../index.css'
 import animate from '../../animate.css'
 import { Pages_settings } from '../../../interfaces/enums_pages'
+interface Response_smtp{
+  message:string,
+  error:boolean,
+  data?:null
+}
+enum RoleSmtp{
+  system="system",
+  newsletter="newsletter"
+}
 @customElement('settingsmtp-page')
 export class DomainOption extends LitElement {
   public static styles = [unsafeCSS(style), unsafeCSS(animate)]
   //obecna strona
   @property()
   smtp_type:string = ``
+  @property()
+  smtp_data:null = null
   changePage(e:any){
     const route:Pages_settings = Pages_settings.main
     const options = {
@@ -18,6 +29,30 @@ export class DomainOption extends LitElement {
       };
     this.dispatchEvent(new CustomEvent('set-Page', options))
 }
+
+  get_smtp_data(){
+    fetch(`/api/v1/get/smtp`, {
+      method: 'POST',
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        type:this.smtp_type == Pages_settings.smtp_newsletter?RoleSmtp.newsletter:RoleSmtp.system
+      })
+    }).then((res) => res.json())
+    .then((res:Response_smtp)=>{
+      console.log(res)
+    })
+    .catch((er)=>{
+      console.log(er,'blad')
+    })
+  }
+  connectedCallback(): void {
+    super.connectedCallback()
+    this.get_smtp_data()
+  }
+
   render() {
     return html`
     <div class="flex justify-center h-full animated fadeInDown">

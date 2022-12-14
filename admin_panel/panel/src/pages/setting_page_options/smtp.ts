@@ -4,6 +4,8 @@ import style from '../../index.css'
 import animate from '../../animate.css'
 import { Pages_settings } from '../../../interfaces/enums_pages'
 import {create_alert,Alert_types} from '../../../modules/create_alert'
+import {get_error_true_module} from '../../../modules/error_true_module'
+import {create_skeleton_module} from '../../../modules/create_skeleton_module'
 interface Smtp_object  {
   host:string,
   password:string,
@@ -18,7 +20,7 @@ enum Smtp_panel_status{
 interface Response_smtp{
   message:string,
   error:boolean,
-  data?:null
+  data?:null|Smtp_object
 }
 enum RoleSmtp{
   system="system",
@@ -27,6 +29,13 @@ enum RoleSmtp{
 @customElement('settingsmtp-page')
 export class DomainOption extends LitElement {
   public static styles = [unsafeCSS(style), unsafeCSS(animate)]
+  //Inputy
+  @query('#smtp_password')
+  inputSmtpPassword?:HTMLInputElement
+  @query(`#smtp_user`)
+  inputSmtpUser?:HTMLInputElement
+  @query(`#smtp_host`)
+  inputSmtpHost?:HTMLInputElement
   //obecna strona
   @property()
   smtp_type:string = ``
@@ -34,6 +43,10 @@ export class DomainOption extends LitElement {
   smtp_data:null|Smtp_object = null
   @property()
   smtp_status:Smtp_panel_status = Smtp_panel_status.pending
+  @property()
+  standard_error_text:string = 'Wystąpił błąd podczas pobierania danych. Może być to wewnętrzny błąd serwera lub twoje połączenie z internetem.'
+  @property()
+  error_text:string = this.standard_error_text
   changePage(e:any){
     const route:Pages_settings = Pages_settings.main
     const options = {
@@ -46,9 +59,6 @@ export class DomainOption extends LitElement {
 
   get_smtp_data(){
     this.smtp_status= Smtp_panel_status.pending
-    for(let i =0;i<100;i++){
-      create_alert(Alert_types.error,60,"test1",this.shadowRoot as ShadowRoot)
-    }
     fetch(`/api/v1/get/smtp`, {
       method: 'POST',
       headers: {
@@ -61,15 +71,74 @@ export class DomainOption extends LitElement {
     }).then((res) => res.json())
     .then((res:Response_smtp)=>{
       console.log(res)
+      if(res.error){
+        //mamy błąd
+        create_alert(Alert_types.error,5,res.message,this.shadowRoot as ShadowRoot)
+        setTimeout(() => {
+          this.error_text = res.message
+          this.smtp_status = Smtp_panel_status.error
+
+        }, 1000);
+        
+      }else{
+        //nie mamy błędu
+ 
+        setTimeout(() => {
+          create_alert(Alert_types.sucess,3,res.message,this.shadowRoot as ShadowRoot)
+          this.smtp_status = Smtp_panel_status.sucess
+          if('data' in res){
+            this.smtp_data = res.data as Smtp_object | null
+
+          } 
+        }, 500);
+        
+      }
+
     })
     .catch((er)=>{
       create_alert(Alert_types.error,5,"Wystąpił błąd",this.shadowRoot as ShadowRoot)
       setTimeout(() => {
         this.smtp_status = Smtp_panel_status.error
+        this.error_text = this.standard_error_text
       }, 1000);
    
     })
   }
+
+  protected updated(_changedProperties: Map<PropertyKey, unknown>): void {
+    if(_changedProperties.has("smtp_data")){
+      if(this.smtp_data == null){
+        this.disable_all = false
+      }else{
+        this.disable_all = true
+      }
+    }
+  
+  }
+
+  @property()
+  show_password:boolean = false
+  @property()
+  disable_all:boolean = true;
+  showHidePassword(){
+    if(!this.inputSmtpPassword)
+      return
+    console.log(this.inputSmtpPassword?.type)
+    if(this.inputSmtpPassword?.type == 'password'){
+      this.inputSmtpPassword.type = 'text';
+      this.show_password = true
+    }else if(this.inputSmtpPassword?.type == 'text'){
+      this.inputSmtpPassword.type = 'password';
+      this.show_password = false
+    }
+  }
+  @property()
+  edit_smtp_buttons:boolean = false
+  editSmtp(){
+    this.disable_all = false
+    this.edit_smtp_buttons = true
+  }
+
 
   connectedCallback(): void {
     super.connectedCallback()
@@ -94,102 +163,50 @@ export class DomainOption extends LitElement {
       </div>
       <div class="p-6 h-[80%] max-h-[100%] overflow-y-auto">
  
-      ${this.smtp_status == Smtp_panel_status.pending?html`<div  class=" p-4 space-y-4 w-full rounded border border-gray-200 divide-y divide-gray-200 shadow animate-pulse dark:divide-gray-700 md:p-6 dark:border-gray-700">
-      <div class="flex justify-between items-center">
-          <div>
-              <div class="h-2.5 bg-gray-300 rounded-full dark:bg-gray-600 w-24 mb-2.5"></div>
-              <div class="w-32 h-2 bg-gray-200 rounded-full dark:bg-gray-700"></div>
-          </div>
-          <div class="h-2.5 bg-gray-300 rounded-full dark:bg-gray-700 w-12"></div>
-      </div>
-      <div class="flex justify-between items-center pt-4">
-          <div>
-              <div class="h-2.5 bg-gray-300 rounded-full dark:bg-gray-600 w-24 mb-2.5"></div>
-              <div class="w-32 h-2 bg-gray-200 rounded-full dark:bg-gray-700"></div>
-          </div>
-          <div class="h-2.5 bg-gray-300 rounded-full dark:bg-gray-700 w-12"></div>
-      </div>
-      <div class="flex justify-between items-center pt-4">
-          <div>
-              <div class="h-2.5 bg-gray-300 rounded-full dark:bg-gray-600 w-24 mb-2.5"></div>
-              <div class="w-32 h-2 bg-gray-200 rounded-full dark:bg-gray-700"></div>
-          </div>
-          <div class="h-2.5 bg-gray-300 rounded-full dark:bg-gray-700 w-12"></div>
-      </div>
-      <div class="flex justify-between items-center pt-4">
-          <div>
-              <div class="h-2.5 bg-gray-300 rounded-full dark:bg-gray-600 w-24 mb-2.5"></div>
-              <div class="w-32 h-2 bg-gray-200 rounded-full dark:bg-gray-700"></div>
-          </div>
-          <div class="h-2.5 bg-gray-300 rounded-full dark:bg-gray-700 w-12"></div>
-      </div>
-      <div class="flex justify-between items-center pt-4">
-          <div>
-              <div class="h-2.5 bg-gray-300 rounded-full dark:bg-gray-600 w-24 mb-2.5"></div>
-              <div class="w-32 h-2 bg-gray-200 rounded-full dark:bg-gray-700"></div>
-          </div>
-          <div class="h-2.5 bg-gray-300 rounded-full dark:bg-gray-700 w-12"></div>
-      </div>
-      <span class="sr-only">Loading...</span>
-  </div>`:html`
+      ${this.smtp_status == Smtp_panel_status.pending?html`${create_skeleton_module()}`:html`
     ${this.smtp_status == Smtp_panel_status.error?html`
-    <div  class="p-4 mb-4 border border-red-300 rounded-lg bg-red-50 dark:bg-red-200 animated fadeInDown" >
-  <div class="flex items-center">
-    <svg aria-hidden="true" class="w-5 h-5 mr-2 text-red-900 dark:text-red-800" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path></svg>
-    <span class="sr-only">Info</span>
-    <h3 class="text-lg font-medium text-red-900 dark:text-red-800">Wystąpił błąd</h3>
-  </div>
-  <div class="mt-2 mb-4 text-sm text-red-900 dark:text-red-800">
-    Wystąpił błąd podczas pobierania danych. Sprawdź połączenie z internetem i spróbuj ponownie.
-  </div>
-  <div class="flex">
-    <button @click="${this.get_smtp_data}" type="button" class="text-white bg-red-900 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-xs px-3 py-1.5 mr-2 text-center inline-flex items-center dark:bg-red-800 dark:hover:bg-red-900">
-    <svg class="-ml-0.5 mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
-      Spróbuj ponownie
-    </button>
+    ${get_error_true_module(this.error_text,this.get_smtp_data)}
+    `:html`
+    <div class="flex m-3">
+    <span class="inline-flex items-center px-3 text-sm text-gray-900 bg-gray-200 rounded-l-md border border-r-0 border-gray-300 dark:bg-gray-600 dark:text-gray-400 dark:border-gray-600">
+      Host
+    </span>
+    ${this.disable_all == true?html` <input disabled value="${this.smtp_data!= null?`${this.smtp_data?.host as string}`:``}" type="text" id="smtp_host" class="rounded-none rounded-r-lg bg-gray-50 border border-gray-300 text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Podaj nazwę hosta">`:html` <input value="${this.smtp_data!= null?`${this.smtp_data?.host as string}`:``}" type="text" id="smtp_host" class="rounded-none rounded-r-lg bg-gray-50 border border-gray-300 text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Podaj nazwę hosta">`}
    
   </div>
+
+  <div class="flex m-3">
+  <span class="inline-flex items-center px-3 text-sm text-gray-900 bg-gray-200 rounded-l-md border border-r-0 border-gray-300 dark:bg-gray-600 dark:text-gray-400 dark:border-gray-600">
+    Login
+  </span>
+  ${this.disable_all == true?html` <input disabled value="${this.smtp_data!= null?`${this.smtp_data?.user as string}`:``}" type="text" id="smtp_user" class="rounded-none rounded-r-lg bg-gray-50 border border-gray-300 text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Podaj nazwę użytkownika">`:html`<input  value="${this.smtp_data!= null?`${this.smtp_data?.user as string}`:``}" type="text" id="smtp_user" class="rounded-none rounded-r-lg bg-gray-50 border border-gray-300 text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Podaj nazwę użytkownika">`}
+ 
 </div>
-    `:html``}
+
+<div class="flex m-3">
+<span class="inline-flex items-center px-3 text-sm text-gray-900 bg-gray-200 rounded-l-md border border-r-0 border-gray-300 dark:bg-gray-600 dark:text-gray-400 dark:border-gray-600">
+  Hasło
+</span>
+<span @click="${this.showHidePassword}"  class="cursor-pointer inline-flex items-center px-3 text-sm text-gray-900 bg-gray-200  border border-r-0 border-gray-300 dark:bg-gray-600 dark:text-gray-400 dark:border-gray-600">
+${this.show_password == false?html`<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>`:html`<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"></path></svg>`}
+</span>
+${this.disable_all == true?html`<input disabled value="${this.smtp_data!= null?`${this.smtp_data?.password as string}`:``}" type="password" id="smtp_password" class="rounded-none rounded-r-lg bg-gray-50 border border-gray-300 text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Podaj hasło użytkownika">`:html`<input value="${this.smtp_data!= null?`${this.smtp_data?.password as string}`:``}" type="password" id="smtp_password" class="rounded-none rounded-r-lg bg-gray-50 border border-gray-300 text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Podaj hasło użytkownika">`}
+</div>
+<div class="flex m-3">
+${this.edit_smtp_buttons == true?html``:html`<button @click="${this.editSmtp}" type="button" class=" text-white bg-[#4285F4] hover:bg-[#4285F4]/90 focus:ring-4 focus:outline-none focus:ring-[#4285F4]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-[#4285F4]/55 mr-2 mb-2">
+<svg class="mr-2 -ml-1 w-4 h-4"" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+  Edytuj
+</button>
+
+<button type="button" class="text-gray-900 bg-gray-100 hover:bg-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-gray-500 mr-2 mb-2">
+<svg class="w-4 h-4 mr-2 -ml-1 text-[#626890]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path></svg>
+  Wyślij testowego maila
+</button>`}
+
+</div>
+    `}
   `}
 
-      
-      <div class="relative z-0 mb-6 w-full group">
-      <input type="email" name="floating_email" id="floating_email" class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " required />
-      <label for="floating_email" class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Email address</label>
-  </div>
-  <div class="relative z-0 mb-6 w-full group">
-      <input type="password" name="floating_password" id="floating_password" class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " required />
-      <label for="floating_password" class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Password</label>
-  </div>
-  <div class="relative z-0 mb-6 w-full group">
-      <input type="password" name="repeat_password" id="floating_repeat_password" class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " required />
-      <label for="floating_repeat_password" class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Confirm password</label>
-  </div>
-  <div class="grid grid-cols-2 md:gap-6">
-    <div class="relative z-0 mb-6 w-full group">
-        <input type="text" name="floating_first_name" id="floating_first_name" class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " required />
-        <label for="floating_first_name" class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">First name</label>
-    </div>
-    <div class="relative z-0 mb-6 w-full group">
-        <input type="text" name="floating_last_name" id="floating_last_name" class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " required />
-        <label for="floating_last_name" class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Last name</label>
-    </div>
-  </div>
-  <div class="grid md:grid-cols-2 md:gap-6">
-    <div class="relative z-0 mb-6 w-full group">
-        <input type="tel" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" name="floating_phone" id="floating_phone" class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " required />
-        <label for="floating_phone" class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Phone number (123-456-7890)</label>
-    </div>
-    <div class="relative z-0 mb-6 w-full group">
-        <input type="text" name="floating_company" id="floating_company" class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " required />
-        <label for="floating_company" class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Company (Ex. Google)</label>
-    </div>
-  </div>
-  <button type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Submit</button>
-</div>
-
-      <div>
  
 
 

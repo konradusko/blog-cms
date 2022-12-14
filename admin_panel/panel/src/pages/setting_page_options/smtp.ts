@@ -39,9 +39,14 @@ export class DomainOption extends LitElement {
 
   get_smtp_data(){
     setTimeout(()=>{
-      create_alert(Alert_types.error,5,"test",this.shadowRoot as ShadowRoot)
+      create_alert(Alert_types.error,5,"test1",this.shadowRoot as ShadowRoot)
     },6000)
-
+    setTimeout(()=>{
+      create_alert(Alert_types.warning,10,"test2",this.shadowRoot as ShadowRoot)
+    },7000)
+    setTimeout(()=>{
+      create_alert(Alert_types.warning,5,"test3",this.shadowRoot as ShadowRoot)
+    },7000)
     fetch(`/api/v1/get/smtp`, {
       method: 'POST',
       headers: {

@@ -3,6 +3,7 @@ import { customElement, property, query} from 'lit/decorators.js'
 import style from '../../index.css'
 import animate from '../../animate.css'
 import { Pages_settings } from '../../../interfaces/enums_pages'
+import {create_alert,Alert_types} from '../../../modules/create_alert'
 interface Smtp_object  {
   host:string,
   password:string,
@@ -37,6 +38,10 @@ export class DomainOption extends LitElement {
 }
 
   get_smtp_data(){
+    setTimeout(()=>{
+      create_alert(Alert_types.error,5,"test",this.shadowRoot as ShadowRoot)
+    },6000)
+
     fetch(`/api/v1/get/smtp`, {
       method: 'POST',
       headers: {
@@ -61,6 +66,8 @@ export class DomainOption extends LitElement {
 
   render() {
     return html`
+
+
     <div class="flex justify-center h-full animated fadeInDown">
     <div class="flex rounded-lg shadow-lg bg-white  w-[80%] h-[98%] flex-col">
       <div class="py-3 px-6 border-b border-gray-300 ">

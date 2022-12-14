@@ -10,7 +10,28 @@
     -webkit-animation-name: fadeInDown;
     animation-name: fadeInDown;
 }
-
+.bg-green-100 {
+    --tw-bg-opacity: 1;
+    background-color: rgb(220 252 231 / var(--tw-bg-opacity));
+}
+.border-green-500 {
+    --tw-border-opacity: 1;
+    border-color: rgb(34 197 94 / var(--tw-border-opacity));
+}
+.border-t-4 {
+    border-top-width: 4px;
+}
+.bg-yellow-100 {
+    --tw-bg-opacity: 1;
+    background-color: rgb(254 249 195 / var(--tw-bg-opacity));
+}
+.border-yellow-500 {
+    --tw-border-opacity: 1;
+    border-color: rgb(234 179 8 / var(--tw-border-opacity));
+}
+.border-t-4 {
+    border-top-width: 4px;
+}
 @-webkit-keyframes fadeInDown {
     0% {
         opacity: 0;

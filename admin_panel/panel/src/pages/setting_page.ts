@@ -35,6 +35,9 @@ export class SettingPage extends LitElement {
   render() {
     if(this.current_page == Pages_settings.main){
       return html`
+ 
+
+
       <div class="flex justify-center h-full animated fadeInDown">
       <div class="flex rounded-lg shadow-lg bg-white text-center w-[80%] h-[98%] flex-col">
         <div class="py-3 px-6 border-b border-gray-300 ">

@@ -99,7 +99,7 @@ export class PanelElement extends LitElement {
 
   <!-- strat content -->
   <div class="bg-gray-100 flex-1 p-6  "> 
-    <div class="  w-full  h-[calc(100vh_-_8rem)]">
+    <div class=" relative w-full  h-[calc(100vh_-_8rem)]">
     ${this.current_page == Pages.home_page?html`home_page`:html``}
     ${this.current_page == Pages.settings_page?html`<setting-page></setting-page>`:html``}
     ${this.current_page == Pages.event_log_page?html`logi`:html``}

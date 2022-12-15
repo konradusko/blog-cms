@@ -6,6 +6,7 @@ import { Pages_settings } from '../../../interfaces/enums_pages'
 import {create_alert,Alert_types} from '../../../modules/create_alert'
 import {get_error_true_module} from '../../../modules/error_true_module'
 import {create_skeleton_module} from '../../../modules/create_skeleton_module'
+import {createModal_update_changes} from '../../../modules/create_modal_saving_change'
 interface Smtp_object  {
   host:string,
   password:string,
@@ -73,11 +74,9 @@ export class DomainOption extends LitElement {
       console.log(res)
       if(res.error){
         //mamy błąd
-        create_alert(Alert_types.error,5,res.message,this.shadowRoot as ShadowRoot)
         setTimeout(() => {
           this.error_text = res.message
           this.smtp_status = Smtp_panel_status.error
-
         }, 1000);
         
       }else{
@@ -135,10 +134,24 @@ export class DomainOption extends LitElement {
   @property()
   edit_smtp_buttons:boolean = false
   editSmtp(){
-    this.disable_all = false
-    this.edit_smtp_buttons = true
-  }
+    if(this.edit_smtp_buttons == false){
+      this.disable_all = false
+      this.edit_smtp_buttons = true
+    }else{
+      this.disable_all = true
+      this.edit_smtp_buttons = false
+    }
 
+  }
+  //button element
+  @query(`#addUpdateSmtp`)
+  addUpdateSmtp_button?:HTMLButtonElement
+  addUpdateSmtp(){
+    if(!this.addUpdateSmtp_button)
+      return
+    this.addUpdateSmtp_button.disabled = true
+    createModal_update_changes(this.shadowRoot as ShadowRoot)
+    }
 
   connectedCallback(): void {
     super.connectedCallback()
@@ -147,7 +160,7 @@ export class DomainOption extends LitElement {
 
   render() {
     return html`
-
+  
 
     <div class="flex justify-center h-full animated fadeInDown">
     <div class="flex rounded-lg shadow-lg bg-white  w-[80%] h-[98%] flex-col">
@@ -192,8 +205,23 @@ ${this.show_password == false?html`<svg class="w-6 h-6" fill="none" stroke="curr
 </span>
 ${this.disable_all == true?html`<input disabled value="${this.smtp_data!= null?`${this.smtp_data?.password as string}`:``}" type="password" id="smtp_password" class="rounded-none rounded-r-lg bg-gray-50 border border-gray-300 text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Podaj hasło użytkownika">`:html`<input value="${this.smtp_data!= null?`${this.smtp_data?.password as string}`:``}" type="password" id="smtp_password" class="rounded-none rounded-r-lg bg-gray-50 border border-gray-300 text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Podaj hasło użytkownika">`}
 </div>
-<div class="flex m-3">
-${this.edit_smtp_buttons == true?html``:html`<button @click="${this.editSmtp}" type="button" class=" text-white bg-[#4285F4] hover:bg-[#4285F4]/90 focus:ring-4 focus:outline-none focus:ring-[#4285F4]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-[#4285F4]/55 mr-2 mb-2">
+
+${this.edit_smtp_buttons == true?html
+  `
+  <div class="flex mt-7 ml-3 mr-3 animated fadeInDown">
+<button @click="${this.addUpdateSmtp}" id="addUpdateSmtp" type="button" class=" text-white bg-[#4285F4] hover:bg-[#4285F4]/90 focus:ring-4 focus:outline-none focus:ring-[#4285F4]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-[#4285F4]/55 mr-2 mb-2">
+<svg class="mr-2 -ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path></svg>
+  Zapisz
+</button>
+
+<button  @click="${this.editSmtp}" type="button" class=" text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-[#4285F4]/55 mr-2 mb-2">
+<svg class="mr-2 -ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+  Anuluj
+</button>
+</div>
+`:html`
+<div class="flex  mt-7 ml-3 mr-3 animated fadeInDown">
+<button @click="${this.editSmtp}" type="button" class=" text-white bg-[#4285F4] hover:bg-[#4285F4]/90 focus:ring-4 focus:outline-none focus:ring-[#4285F4]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-[#4285F4]/55 mr-2 mb-2">
 <svg class="mr-2 -ml-1 w-4 h-4"" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
   Edytuj
 </button>
@@ -201,9 +229,9 @@ ${this.edit_smtp_buttons == true?html``:html`<button @click="${this.editSmtp}" t
 <button type="button" class="text-gray-900 bg-gray-100 hover:bg-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-gray-500 mr-2 mb-2">
 <svg class="w-4 h-4 mr-2 -ml-1 text-[#626890]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path></svg>
   Wyślij testowego maila
-</button>`}
+</button></div>`}
 
-</div>
+
     `}
   `}
 

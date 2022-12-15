@@ -6,7 +6,8 @@ import { Pages_settings } from '../../../interfaces/enums_pages'
 import {create_alert,Alert_types} from '../../../modules/create_alert'
 import {get_error_true_module} from '../../../modules/error_true_module'
 import {create_skeleton_module} from '../../../modules/create_skeleton_module'
-import {createModal_update_changes} from '../../../modules/create_modal_saving_change'
+import {createModal_update_changes,remove_modal_update_changes} from '../../../modules/create_modal_saving_change'
+import {create_modal_are_your_sure} from '../../../modules/show_modal_are_you_sure'
 interface Smtp_object  {
   host:string,
   password:string,
@@ -26,6 +27,10 @@ interface Response_smtp{
 enum RoleSmtp{
   system="system",
   newsletter="newsletter"
+}
+enum get_data_type{
+  loading='loading',
+  refresh='refresh'
 }
 @customElement('settingsmtp-page')
 export class DomainOption extends LitElement {
@@ -57,9 +62,12 @@ export class DomainOption extends LitElement {
       };
     this.dispatchEvent(new CustomEvent('set-Page', options))
 }
-
-  get_smtp_data(){
+  
+  get_smtp_data(type:get_data_type){
+    if(type == get_data_type.loading)
     this.smtp_status= Smtp_panel_status.pending
+    this.disable_all = true
+    this.show_password = false
     fetch(`/api/v1/get/smtp`, {
       method: 'POST',
       headers: {
@@ -81,18 +89,21 @@ export class DomainOption extends LitElement {
         
       }else{
         //nie mamy błędu
- 
-        setTimeout(() => {
-          create_alert(Alert_types.sucess,3,res.message,this.shadowRoot as ShadowRoot)
-          this.smtp_status = Smtp_panel_status.sucess
+        if(type == get_data_type.loading){
+          setTimeout(() => {
+            create_alert(Alert_types.sucess,3,res.message,this.shadowRoot as ShadowRoot)
+            this.smtp_status = Smtp_panel_status.sucess
+            if('data' in res){
+              this.smtp_data = res.data as Smtp_object | null
+            } 
+          }, 500);
+        }else{
           if('data' in res){
             this.smtp_data = res.data as Smtp_object | null
-
           } 
-        }, 500);
-        
+        }
+      
       }
-
     })
     .catch((er)=>{
       create_alert(Alert_types.error,5,"Wystąpił błąd",this.shadowRoot as ShadowRoot)
@@ -151,16 +162,71 @@ export class DomainOption extends LitElement {
       return
     this.addUpdateSmtp_button.disabled = true
     createModal_update_changes(this.shadowRoot as ShadowRoot)
+    //sprawdzam inputy
+    if(this.inputSmtpHost?.value.length == 0){
+      remove_modal_update_changes(this.shadowRoot as ShadowRoot)
+      create_alert(Alert_types.warning,3,"Należy podać host",this.shadowRoot as ShadowRoot)
+      this.addUpdateSmtp_button.disabled = false
+    }
+    if(this.inputSmtpPassword?.value.length == 0){
+      remove_modal_update_changes(this.shadowRoot as ShadowRoot)
+      create_alert(Alert_types.warning,3,"Należy podać hasło dostępu",this.shadowRoot as ShadowRoot)
+      this.addUpdateSmtp_button.disabled = false
+    }
+    if(this.inputSmtpUser?.value.length == 0){
+      remove_modal_update_changes(this.shadowRoot as ShadowRoot)
+      create_alert(Alert_types.warning,3,"Należy podać nazwę użytkownika",this.shadowRoot as ShadowRoot)
+      this.addUpdateSmtp_button.disabled = false
+    }
+
+    fetch('/api/v1/add/smtp',{
+      method: 'POST',
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        host:String(this.inputSmtpHost?.value),
+        password:String(this.inputSmtpPassword?.value),
+        user:String(this.inputSmtpUser?.value),
+        type:this.smtp_type == Pages_settings.smtp_newsletter?RoleSmtp.newsletter:RoleSmtp.system
+      })
+    }).then((res) => res.json())
+    .then((res:Response_smtp)=>{
+      console.log(res)
+      if(res.error){
+        remove_modal_update_changes(this.shadowRoot as ShadowRoot)
+        create_alert(Alert_types.error,3,res.message,this.shadowRoot as ShadowRoot)
+        if(this.addUpdateSmtp_button)
+        this.addUpdateSmtp_button.disabled = false
+      }else{
+        remove_modal_update_changes(this.shadowRoot as ShadowRoot)
+        create_alert(Alert_types.sucess,3,res.message,this.shadowRoot as ShadowRoot)
+        if(this.addUpdateSmtp_button)
+        this.addUpdateSmtp_button.disabled = false
+        this.editSmtp()
+        this.get_smtp_data(get_data_type.refresh)
+      }
+    })
+    .catch((er)=>{
+      remove_modal_update_changes(this.shadowRoot as ShadowRoot)
+      create_alert(Alert_types.error,3,"Wystąpił błąd ",this.shadowRoot as ShadowRoot)
+      if(this.addUpdateSmtp_button)
+      this.addUpdateSmtp_button.disabled = false
+    })
+
     }
 
   connectedCallback(): void {
     super.connectedCallback()
-    this.get_smtp_data()
+    this.get_smtp_data(get_data_type.loading)
   }
-
+  deleteSmtp(){
+    create_modal_are_your_sure(this.shadowRoot as ShadowRoot)
+  }
   render() {
     return html`
-  
+
 
     <div class="flex justify-center h-full animated fadeInDown">
     <div class="flex rounded-lg shadow-lg bg-white  w-[80%] h-[98%] flex-col">
@@ -229,7 +295,13 @@ ${this.edit_smtp_buttons == true?html
 <button type="button" class="text-gray-900 bg-gray-100 hover:bg-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-gray-500 mr-2 mb-2">
 <svg class="w-4 h-4 mr-2 -ml-1 text-[#626890]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path></svg>
   Wyślij testowego maila
-</button></div>`}
+</button>
+<button  @click="${this.deleteSmtp}" type="button" class=" text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-[#4285F4]/55 mr-2 mb-2">
+<svg class="mr-2 -ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+  Anuluj
+</button>
+
+</div>`}
 
 
     `}

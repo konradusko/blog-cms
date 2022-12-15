@@ -1,6 +1,8 @@
-import { html } from "lit"
-
-export const create_modal_are_your_sure = (shadowRoot:ShadowRoot)=>{
+export const remove_modal_are_your_sure = (shadowRoot:ShadowRoot)=>{
+    if(shadowRoot.querySelector('#modal_are_you_sure'))
+        shadowRoot.querySelector('#modal_are_you_sure')?.remove()
+}
+export const create_modal_are_your_sure = (shadowRoot:ShadowRoot,sucessFunction:Function,...data:any)=>{
     const modal_check = document.createElement('div')
     modal_check.setAttribute('class',"flex absolute top-0 left-0 right-0 z-50   overflow-x-hidden overflow-y-auto md:inset-0 w-full h-full  animated fadeInDown")
     modal_check.id = "modal_are_you_sure"
@@ -48,6 +50,9 @@ export const create_modal_are_your_sure = (shadowRoot:ShadowRoot)=>{
     button_no.addEventListener('click',()=>{
         if(shadowRoot.querySelector('#modal_are_you_sure'))
             shadowRoot.querySelector('#modal_are_you_sure')?.remove()
+    })
+    button_yes.addEventListener('click',()=>{
+            return sucessFunction(shadowRoot,data)
     })
 
 shadowRoot.appendChild(modal_check)

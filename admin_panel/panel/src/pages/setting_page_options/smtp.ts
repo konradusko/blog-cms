@@ -7,7 +7,7 @@ import {create_alert,Alert_types} from '../../../modules/create_alert'
 import {get_error_true_module} from '../../../modules/error_true_module'
 import {create_skeleton_module} from '../../../modules/create_skeleton_module'
 import {createModal_update_changes,remove_modal_update_changes} from '../../../modules/create_modal_saving_change'
-import {create_modal_are_your_sure} from '../../../modules/show_modal_are_you_sure'
+import {create_modal_are_your_sure,remove_modal_are_your_sure} from '../../../modules/show_modal_are_you_sure'
 interface Smtp_object  {
   host:string,
   password:string,
@@ -221,8 +221,38 @@ export class DomainOption extends LitElement {
     super.connectedCallback()
     this.get_smtp_data(get_data_type.loading)
   }
+  sucess_remove_smtp_recored(shadowRoot:ShadowRoot,data:any){
+    // console.log(this.smtp_type)
+    console.log(data)
+      remove_modal_are_your_sure(shadowRoot)
+      createModal_update_changes(shadowRoot)
+      // fetch('/api/v1/delete/smtp',{
+      //   method: 'POST',
+      //   headers: {
+      //     Accept: "application/json",
+      //     "Content-Type": "application/json",
+      //   },
+      //   body: JSON.stringify({
+      //     type:this.smtp_type == Pages_settings.smtp_newsletter?RoleSmtp.newsletter:RoleSmtp.system
+      //   })
+      // }).then((res) => res.json())
+      //   .then((res:Response_smtp)=>{
+      //       if(res.error){
+      //         remove_modal_update_changes(shadowRoot)
+      //         create_alert(Alert_types.error,3,res.message,this.shadowRoot as ShadowRoot)
+      //       }else{
+      //         remove_modal_update_changes(shadowRoot)
+      //         create_alert(Alert_types.sucess,3,res.message,this.shadowRoot as ShadowRoot)
+      //         this.get_smtp_data(get_data_type.refresh)
+      //       }
+      //   })
+      //   .catch((er)=>{
+      //    remove_modal_update_changes(shadowRoot)
+      //    create_alert(Alert_types.error,3,"Wystąpił błąd ",this.shadowRoot as ShadowRoot)
+      //   })
+  }
   deleteSmtp(){
-    create_modal_are_your_sure(this.shadowRoot as ShadowRoot)
+    create_modal_are_your_sure(this.shadowRoot as ShadowRoot,this.sucess_remove_smtp_recored,this.smtp_data)
   }
   render() {
     return html`

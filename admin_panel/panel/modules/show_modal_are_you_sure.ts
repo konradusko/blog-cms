@@ -2,7 +2,7 @@ export const remove_modal_are_your_sure = (shadowRoot:ShadowRoot)=>{
     if(shadowRoot.querySelector('#modal_are_you_sure'))
         shadowRoot.querySelector('#modal_are_you_sure')?.remove()
 }
-export const create_modal_are_your_sure = (shadowRoot:ShadowRoot,sucessFunction:Function,...data:any)=>{
+export const create_modal_are_your_sure = (shadowRoot:ShadowRoot,callbackFunction:Function)=>{
     const modal_check = document.createElement('div')
     modal_check.setAttribute('class',"flex absolute top-0 left-0 right-0 z-50   overflow-x-hidden overflow-y-auto md:inset-0 w-full h-full  animated fadeInDown")
     modal_check.id = "modal_are_you_sure"
@@ -52,7 +52,7 @@ export const create_modal_are_your_sure = (shadowRoot:ShadowRoot,sucessFunction:
             shadowRoot.querySelector('#modal_are_you_sure')?.remove()
     })
     button_yes.addEventListener('click',()=>{
-            return sucessFunction(shadowRoot,data)
+            return callbackFunction()
     })
 
 shadowRoot.appendChild(modal_check)

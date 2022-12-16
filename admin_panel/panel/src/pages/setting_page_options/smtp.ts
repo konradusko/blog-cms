@@ -32,6 +32,7 @@ enum get_data_type{
   loading='loading',
   refresh='refresh'
 }
+
 @customElement('settingsmtp-page')
 export class DomainOption extends LitElement {
   public static styles = [unsafeCSS(style), unsafeCSS(animate)]
@@ -68,6 +69,7 @@ export class DomainOption extends LitElement {
     this.smtp_status= Smtp_panel_status.pending
     this.disable_all = true
     this.show_password = false
+    this.edit_smtp_buttons = false
     fetch(`/api/v1/get/smtp`, {
       method: 'POST',
       headers: {
@@ -121,6 +123,7 @@ export class DomainOption extends LitElement {
         this.disable_all = false
       }else{
         this.disable_all = true
+        this.edit_smtp_buttons = false
       }
     }
   
@@ -167,16 +170,19 @@ export class DomainOption extends LitElement {
       remove_modal_update_changes(this.shadowRoot as ShadowRoot)
       create_alert(Alert_types.warning,3,"Należy podać host",this.shadowRoot as ShadowRoot)
       this.addUpdateSmtp_button.disabled = false
+      return
     }
     if(this.inputSmtpPassword?.value.length == 0){
       remove_modal_update_changes(this.shadowRoot as ShadowRoot)
       create_alert(Alert_types.warning,3,"Należy podać hasło dostępu",this.shadowRoot as ShadowRoot)
       this.addUpdateSmtp_button.disabled = false
+      return
     }
     if(this.inputSmtpUser?.value.length == 0){
       remove_modal_update_changes(this.shadowRoot as ShadowRoot)
       create_alert(Alert_types.warning,3,"Należy podać nazwę użytkownika",this.shadowRoot as ShadowRoot)
       this.addUpdateSmtp_button.disabled = false
+      return
     }
 
     fetch('/api/v1/add/smtp',{
@@ -221,38 +227,35 @@ export class DomainOption extends LitElement {
     super.connectedCallback()
     this.get_smtp_data(get_data_type.loading)
   }
-  sucess_remove_smtp_recored(shadowRoot:ShadowRoot,data:any){
-    // console.log(this.smtp_type)
-    console.log(data)
-      remove_modal_are_your_sure(shadowRoot)
-      createModal_update_changes(shadowRoot)
-      // fetch('/api/v1/delete/smtp',{
-      //   method: 'POST',
-      //   headers: {
-      //     Accept: "application/json",
-      //     "Content-Type": "application/json",
-      //   },
-      //   body: JSON.stringify({
-      //     type:this.smtp_type == Pages_settings.smtp_newsletter?RoleSmtp.newsletter:RoleSmtp.system
-      //   })
-      // }).then((res) => res.json())
-      //   .then((res:Response_smtp)=>{
-      //       if(res.error){
-      //         remove_modal_update_changes(shadowRoot)
-      //         create_alert(Alert_types.error,3,res.message,this.shadowRoot as ShadowRoot)
-      //       }else{
-      //         remove_modal_update_changes(shadowRoot)
-      //         create_alert(Alert_types.sucess,3,res.message,this.shadowRoot as ShadowRoot)
-      //         this.get_smtp_data(get_data_type.refresh)
-      //       }
-      //   })
-      //   .catch((er)=>{
-      //    remove_modal_update_changes(shadowRoot)
-      //    create_alert(Alert_types.error,3,"Wystąpił błąd ",this.shadowRoot as ShadowRoot)
-      //   })
-  }
   deleteSmtp(){
-    create_modal_are_your_sure(this.shadowRoot as ShadowRoot,this.sucess_remove_smtp_recored,this.smtp_data)
+    create_modal_are_your_sure(this.shadowRoot as ShadowRoot,()=>{
+      remove_modal_are_your_sure(this.shadowRoot as ShadowRoot)
+      createModal_update_changes(this.shadowRoot as ShadowRoot)
+       fetch('/api/v1/delete/smtp',{
+        method: 'POST',
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          type:this.smtp_type == Pages_settings.smtp_newsletter?RoleSmtp.newsletter:RoleSmtp.system
+        })
+      }).then((res) => res.json())
+        .then((res:Response_smtp)=>{
+            if(res.error){
+              remove_modal_update_changes(this.shadowRoot as ShadowRoot)
+              create_alert(Alert_types.error,3,res.message,this.shadowRoot as ShadowRoot)
+            }else{
+              remove_modal_update_changes(this.shadowRoot as ShadowRoot)
+              create_alert(Alert_types.sucess,3,res.message,this.shadowRoot as ShadowRoot)
+              this.get_smtp_data(get_data_type.refresh)
+            }
+        })
+        .catch((er)=>{
+         remove_modal_update_changes(this.shadowRoot as ShadowRoot)
+         create_alert(Alert_types.error,3,"Wystąpił błąd ",this.shadowRoot as ShadowRoot)
+        })
+    })
   }
   render() {
     return html`
@@ -302,7 +305,7 @@ ${this.show_password == false?html`<svg class="w-6 h-6" fill="none" stroke="curr
 ${this.disable_all == true?html`<input disabled value="${this.smtp_data!= null?`${this.smtp_data?.password as string}`:``}" type="password" id="smtp_password" class="rounded-none rounded-r-lg bg-gray-50 border border-gray-300 text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Podaj hasło użytkownika">`:html`<input value="${this.smtp_data!= null?`${this.smtp_data?.password as string}`:``}" type="password" id="smtp_password" class="rounded-none rounded-r-lg bg-gray-50 border border-gray-300 text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Podaj hasło użytkownika">`}
 </div>
 
-${this.edit_smtp_buttons == true?html
+${this.smtp_data!= null?html`${this.edit_smtp_buttons == true?html
   `
   <div class="flex mt-7 ml-3 mr-3 animated fadeInDown">
 <button @click="${this.addUpdateSmtp}" id="addUpdateSmtp" type="button" class=" text-white bg-[#4285F4] hover:bg-[#4285F4]/90 focus:ring-4 focus:outline-none focus:ring-[#4285F4]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-[#4285F4]/55 mr-2 mb-2">
@@ -327,11 +330,16 @@ ${this.edit_smtp_buttons == true?html
   Wyślij testowego maila
 </button>
 <button  @click="${this.deleteSmtp}" type="button" class=" text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-[#4285F4]/55 mr-2 mb-2">
-<svg class="mr-2 -ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-  Anuluj
+<svg class="w-4 h-4 mr-2 -ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+  Usuń konfigurację
 </button>
 
-</div>`}
+</div>`}`:html`  <div class="flex mt-7 ml-3 mr-3 animated fadeInDown">
+<button @click="${this.addUpdateSmtp}" id="addUpdateSmtp" type="button" class=" text-white bg-[#4285F4] hover:bg-[#4285F4]/90 focus:ring-4 focus:outline-none focus:ring-[#4285F4]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-[#4285F4]/55 mr-2 mb-2">
+<svg class="mr-2 -ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path></svg>
+  Dodaj
+</button>`}
+
 
 
     `}

@@ -2,7 +2,8 @@
 module.exports = {
   content: [
     "./index.html",
-    "./src/**/*.{vue,js,ts,jsx,tsx}",
+    "./src/**/**/**/*.{vue,js,ts,jsx,tsx}",
+    "./modules/**/**/**/*.{vue,js,ts,jsx,tsx}",
     './node_modules/tw-elements/dist/js/**/*.{js,css,min.css}',
     './node_modules/tailwindcss-animatecss/dist/js/**/*.{js,css,min.css}'
   ],

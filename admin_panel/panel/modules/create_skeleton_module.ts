@@ -1,4 +1,4 @@
-import { html } from "lit";
+import { html} from "lit";
 
 export const create_skeleton_module = ()=>html`<div  class=" p-4 space-y-4 w-full rounded border border-gray-200 divide-y divide-gray-200 shadow animate-pulse dark:divide-gray-700 md:p-6 dark:border-gray-700">
 <div class="flex justify-between items-center">

@@ -64,7 +64,9 @@ export class DomainOption extends LitElement {
     this.dispatchEvent(new CustomEvent('set-Page', options))
 }
   
-  get_smtp_data(type:get_data_type){
+  get_smtp_data(type:get_data_type = get_data_type.loading){
+    console.log('pobieram')
+    console.log(type)
     if(type == get_data_type.loading)
     this.smtp_status= Smtp_panel_status.pending
     this.disable_all = true
@@ -82,6 +84,7 @@ export class DomainOption extends LitElement {
     }).then((res) => res.json())
     .then((res:Response_smtp)=>{
       console.log(res)
+      remove_modal_update_changes(this.shadowRoot as ShadowRoot)
       if(res.error){
         //mamy błąd
         setTimeout(() => {
@@ -98,7 +101,7 @@ export class DomainOption extends LitElement {
             if('data' in res){
               this.smtp_data = res.data as Smtp_object | null
             } 
-          }, 500);
+          }, 100);
         }else{
           if('data' in res){
             this.smtp_data = res.data as Smtp_object | null
@@ -108,8 +111,10 @@ export class DomainOption extends LitElement {
       }
     })
     .catch((er)=>{
+      
       create_alert(Alert_types.error,5,"Wystąpił błąd",this.shadowRoot as ShadowRoot)
       setTimeout(() => {
+        remove_modal_update_changes(this.shadowRoot as ShadowRoot)
         this.smtp_status = Smtp_panel_status.error
         this.error_text = this.standard_error_text
       }, 1000);
@@ -206,7 +211,6 @@ export class DomainOption extends LitElement {
         if(this.addUpdateSmtp_button)
         this.addUpdateSmtp_button.disabled = false
       }else{
-        remove_modal_update_changes(this.shadowRoot as ShadowRoot)
         create_alert(Alert_types.sucess,3,res.message,this.shadowRoot as ShadowRoot)
         if(this.addUpdateSmtp_button)
         this.addUpdateSmtp_button.disabled = false
@@ -246,9 +250,10 @@ export class DomainOption extends LitElement {
               remove_modal_update_changes(this.shadowRoot as ShadowRoot)
               create_alert(Alert_types.error,3,res.message,this.shadowRoot as ShadowRoot)
             }else{
-              remove_modal_update_changes(this.shadowRoot as ShadowRoot)
-              create_alert(Alert_types.sucess,3,res.message,this.shadowRoot as ShadowRoot)
               this.get_smtp_data(get_data_type.refresh)
+
+              create_alert(Alert_types.sucess,3,res.message,this.shadowRoot as ShadowRoot)
+       
             }
         })
         .catch((er)=>{
@@ -277,7 +282,9 @@ export class DomainOption extends LitElement {
  
       ${this.smtp_status == Smtp_panel_status.pending?html`${create_skeleton_module()}`:html`
     ${this.smtp_status == Smtp_panel_status.error?html`
-    ${get_error_true_module(this.error_text,this.get_smtp_data)}
+    ${get_error_true_module(this.error_text,()=>{
+      this.get_smtp_data()
+    })}
     `:html`
     <div class="flex m-3">
     <span class="inline-flex items-center px-3 text-sm text-gray-900 bg-gray-200 rounded-l-md border border-r-0 border-gray-300 dark:bg-gray-600 dark:text-gray-400 dark:border-gray-600">

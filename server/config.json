@@ -14,7 +14,7 @@
         "legacyHeaders":false
     },
     "system":{
-        "root_user_email":"example@gmailc.om",
+        "root_user_email":"boleslawski.konrad@gmail.com",
         "token_setting_user_session":{
             "expiresIn_in_minutes":240,
             "algorithm":"HS256",

@@ -100,11 +100,15 @@ export class DomainOption extends LitElement {
             this.smtp_status = Smtp_panel_status.sucess
             if('data' in res){
               this.smtp_data = res.data as Smtp_object | null
+              if(res.data == null)
+              this.disable_all = false
             } 
           }, 100);
         }else{
           if('data' in res){
             this.smtp_data = res.data as Smtp_object | null
+            if(res.data == null)
+            this.disable_all = false
           } 
         }
       
@@ -262,6 +266,34 @@ export class DomainOption extends LitElement {
         })
     })
   }
+  //send test email
+  sendTestEmail(){
+    createModal_update_changes(this.shadowRoot as ShadowRoot,`Trwa wysyłanie maila`)
+    fetch('/api/v1/send/test/email',{
+      method: 'POST',
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        type:this.smtp_type == Pages_settings.smtp_newsletter?RoleSmtp.newsletter:RoleSmtp.system
+      })
+    }).then((res) => res.json())
+    .then((res:Response_smtp)=>{
+      console.log(res)
+      if(res.error){
+        remove_modal_update_changes(this.shadowRoot as ShadowRoot)
+        create_alert(Alert_types.error,3,res.message,this.shadowRoot as ShadowRoot)
+      }else{
+          remove_modal_update_changes(this.shadowRoot as ShadowRoot)
+          create_alert(Alert_types.sucess,3,res.message,this.shadowRoot as ShadowRoot)
+      }
+    })
+    .catch(()=>{
+      remove_modal_update_changes(this.shadowRoot as ShadowRoot)
+      create_alert(Alert_types.error,3,"Wystąpił błąd ",this.shadowRoot as ShadowRoot)
+    })
+  }
   render() {
     return html`
 
@@ -332,7 +364,7 @@ ${this.smtp_data!= null?html`${this.edit_smtp_buttons == true?html
   Edytuj
 </button>
 
-<button type="button" class="text-gray-900 bg-gray-100 hover:bg-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-gray-500 mr-2 mb-2">
+<button @click="${this.sendTestEmail}" type="button" class="text-gray-900 bg-gray-100 hover:bg-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-gray-500 mr-2 mb-2">
 <svg class="w-4 h-4 mr-2 -ml-1 text-[#626890]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path></svg>
   Wyślij testowego maila
 </button>

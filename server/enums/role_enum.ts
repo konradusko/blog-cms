@@ -8,3 +8,7 @@ export enum RoleSmtp{
     system="system",
     newsletter="newsletter"
 }
+
+export enum RoleSystemCofnig{
+    systemConf="systemConf"
+}

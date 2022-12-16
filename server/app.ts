@@ -27,6 +27,7 @@ const init_server = async () => {
     //inicjowanie użytkownika admin
     await create_admin_user()
  
+
     app.listen(PORT, () => {
         console.log(`App listen on port ${PORT}`)
     })

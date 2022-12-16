@@ -28,6 +28,7 @@ export class SettingPage extends LitElement {
     }
   setPage(e:any){
     const page:Pages_settings = e.detail
+    console.log(page)
     this.pages[page] = true
     this.pages[this.current_page] = false
     this.current_page = page
@@ -98,7 +99,7 @@ export class SettingPage extends LitElement {
     </div>
       `
     }else if(this.current_page == Pages_settings.domainSetting){
-      return html `<settingdomain-page></settingdomain-page>`
+      return html `<settingdomain-page @set-Page="${this.setPage}"></settingdomain-page>`
     }else if(this.current_page == Pages_settings.smtp_system_mail){
         return html`<settingsmtp-page @set-Page="${this.setPage}" .smtp_type="${Pages_settings.smtp_system_mail}"></settingsmtp-page>`
     }else{

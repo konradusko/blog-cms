@@ -65,6 +65,7 @@ export class DomainOption extends LitElement {
 }
   
   get_smtp_data(type:get_data_type){
+    create_alert(Alert_types.sucess,3333,'test',this.shadowRoot as ShadowRoot)
     if(type == get_data_type.loading)
     this.smtp_status= Smtp_panel_status.pending
     this.disable_all = true

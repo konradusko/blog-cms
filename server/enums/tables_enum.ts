@@ -1,4 +1,5 @@
 export enum Tables{
    Users="Users",
-   Logs="Logs"
+   Logs="Logs",
+   Smtp="Smtp"
 }

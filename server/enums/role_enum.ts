@@ -3,3 +3,8 @@ export enum Role{
     root='root',
     user='user'
 }
+
+export enum RoleSmtp{
+    system="system",
+    newsletter="newsletter"
+}

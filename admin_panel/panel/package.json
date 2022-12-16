@@ -24,6 +24,7 @@
     "express": "^4.18.2",
     "express-http-proxy": "^1.6.3",
     "lit": "^2.4.0",
+    "tailwindcss-animatecss": "^3.0.2",
     "tw-elements": "^1.0.0-alpha13"
   },
   "devDependencies": {

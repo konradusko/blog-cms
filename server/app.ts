@@ -6,8 +6,8 @@ import {create_table_and_promisify} from "./database/async/async_sqlite";
 import { create_tables } from "./database/create_tables";
 import { create_admin_user } from "./init_server/init_admin_user";
 import './routers/panel/auth/routers_login'
-import './routers/client/get_home_route'
 import './modules/read_config'
+import './routers/panel/panel_api/all_api_in_one_place'
 import fs from 'fs'
 if(!fs.existsSync('./sqlite')){
   fs.mkdirSync('./sqlite')

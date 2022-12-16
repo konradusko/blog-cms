@@ -32,6 +32,8 @@ export class DomainOption extends LitElement {
       </div>
       <div class="p-6 h-[80%] max-h-[100%] overflow-y-auto">
  
+
+      
       <div class="overflow-x-auto relative shadow-md sm:rounded-lg">
 
 </div>  

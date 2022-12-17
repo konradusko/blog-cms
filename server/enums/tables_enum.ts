@@ -2,5 +2,6 @@ export enum Tables{
    Users="Users",
    Logs="Logs",
    Smtp="Smtp",
-   SystemConfig="SystemConfig"
+   SystemConfig="SystemConfig",
+   Ip="Ip"
 }

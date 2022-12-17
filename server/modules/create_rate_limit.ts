@@ -8,6 +8,7 @@ import { interface_SystemDomainSettings } from "../interface/system_config_domai
 import { createTime } from './create_time'
 import { create_log } from './create_log'
 import { Logs } from '../enums/logs_enum'
+import { User } from '../interface/user'
 export const create_rate_limit = (config_router:ConfigFile_rate_limit)=>rateLimit({
     windowMs: config_router.time_in_minutes * 60 * 1000,
 	max: config_router.max_request, 
@@ -37,7 +38,12 @@ export const create_rate_limit = (config_router:ConfigFile_rate_limit)=>rateLimi
                     ?.run_promisify(sql_insert_ip_block, sql_insert_ip_block_values)
                     //dodanie logów do systemu
                     const message_log = `Adres ip ${req.ip} został zablokowany `
-                    create_log(Logs.block_ip,'admin',message_log,1)
+                    const sql_query_get_data_system_user = `SELECT * FROM ${Tables.Users} WHERE login = ?`
+                    const sql_values_get_data_system_user = ['system']
+                    const system_user =  await sqlite_database?.get_promisify(sql_query_get_data_system_user,sql_values_get_data_system_user)
+                    if(system_user){
+                        create_log(Logs.block_ip,(system_user as User).login,message_log,(system_user as User).id)
+                    }
                     return   res.status(options.statusCode).json({message:"Twoj adres ip został zablokowany",error:true})
                 } catch (error) {
                     return   res.status(options.statusCode).json({message:"Twoj adres ip został zablokowany",error:true})

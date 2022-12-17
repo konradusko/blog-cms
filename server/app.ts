@@ -4,7 +4,7 @@ const PORT = 3000
 import {Database} from 'sqlite3';
 import {create_table_and_promisify} from "./database/async/async_sqlite";
 import { create_tables } from "./database/create_tables";
-import { create_admin_user } from "./init_server/init_admin_user";
+import { create_admin_user,create_system_user } from "./init_server/init_admin_user";
 import { init_system_table_config } from "./init_server/init_system_config";
 import { requiredHttps } from "./middlewares/checkHttps";
 app.all(`*`,requiredHttps)
@@ -30,6 +30,8 @@ const init_server = async () => {
     //tworzenie tabel dla sqlite
     await create_tables()
  
+    //systemowy uzytkownik
+    await create_system_user()
     //inicjowanie użytkownika admin
     await create_admin_user()
  

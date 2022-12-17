@@ -21,7 +21,6 @@ export const requiredHttps = async(req:Request,res:Response,next:NextFunction)=>
                         const sql_values_find_ip = [req.ip]
                         const find_ip_db  =await sqlite_database?.get_promisify(sql_query_find_ip,sql_values_find_ip)
                         if(find_ip_db){
-                        
                             if(req.method == "GET")
                                 return res.send(`Twoje ip zostało zablokowane dnia ${(find_ip_db as Ip_table_interface).createAt}`)
                                 return res.status(401).json({message:`Twoje ip zostało zablokowane dnia ${(find_ip_db as Ip_table_interface).createAt}`,error:true})

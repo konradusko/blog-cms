@@ -1,7 +1,8 @@
 export enum Role{
     admin='admin',
     root='root',
-    user='user'
+    user='user',
+    system='system'
 }
 
 export enum RoleSmtp{

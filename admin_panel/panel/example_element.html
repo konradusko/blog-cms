@@ -20,12 +20,6 @@ export class DomainOption extends LitElement {
   standard_error_text:string = 'Wystąpił błąd podczas pobierania danych. Może być to wewnętrzny błąd serwera lub twoje połączenie z internetem.'
   @property()
   error_text:string = this.standard_error_text
-
-  connectedCallback(): void {
-    super.connectedCallback()
-   //Pobieranie danych
-  }
-
   changePage(e:any){
     const route:Pages_settings = Pages_settings.main
     const options = {

@@ -15,6 +15,7 @@ app.get('/admin/login',session_not_required_get_request,(req:Request,res:Respons
     }
 })
 app.get('/home',required_session_get_request,(req,res)=>{
+    console.log(req.secure)
     res.send('xd')
 })
 app.post('/admin/login',session_not_required_post_request, create_rate_limit(config.login_rate_limit),post_req_login)

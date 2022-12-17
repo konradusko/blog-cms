@@ -5,7 +5,7 @@ import { sqlite_database } from "../../../../../database/async/async_sqlite";
 import { Tables } from "../../../../../enums/tables_enum";
 import { ajv, DefinedError} from "../../../../../modules/ajv";
 import { Smtp_interface } from "../../../../../interface/system_smtp";
-import { interface_SystemConfigDB} from "../../../../../interface/system_config_table";
+import { interface_SystemDomainSettings} from "../../../../../interface/system_config_domain";
 import { create_transporter } from "../../../../../modules/node_mailer";
 import { User } from "../../../../../interface/user";
 const send_test_email_post:Router = Router()
@@ -37,7 +37,7 @@ send_test_email_post.post('/api/v1/send/test/email',async(req:Request,res:Respon
             from: '"Fred Foo 👻"',
             subject: `Blog cms ${body.type}`,
            to: (res.locals.user as User).email,
-           text: `Testowa wiadomość dla ${body.type== RoleSmtp.newsletter?`maili newsletter`:`maili systemowych`} z przykładowym linkiem do resetowania hasła ${(domain as interface_SystemConfigDB).domain}/reset/password`
+           text: `Testowa wiadomość dla ${body.type== RoleSmtp.newsletter?`maili newsletter`:`maili systemowych`} z przykładowym linkiem do resetowania hasła ${(domain as interface_SystemDomainSettings).domain}/reset/password`
         }
         try {
             await transporter.sendMail(emailData)

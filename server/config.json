@@ -15,6 +15,9 @@
     },
     "system":{
         "root_user_email":"boleslawski.konrad@gmail.com",
+        "domainName":"http://localhost:1000",
+        "blockIp":false,
+        "requiredHttps":false,
         "token_setting_user_session":{
             "expiresIn_in_minutes":240,
             "algorithm":"HS256",

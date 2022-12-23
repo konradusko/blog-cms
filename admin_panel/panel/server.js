@@ -18,6 +18,9 @@ async function create_vite_server_node() {
     app.post('/api/v1/delete/smtp',proxy(`${local_server_nodejs}/api/v1/delete/smtp`))
     app.post('/api/v1/get/smtp', proxy(`${local_server_nodejs}/api/v1/get/smtp`))
     app.post('/api/v1/send/test/email',proxy(`${local_server_nodejs}/api/v1/send/test/email`))
+    app.get('/api/v1/get/domain/settings',proxy(`${local_server_nodejs}/api/v1/get/domain/settings`))
+    app.post('/api/v1/sethost/domain/settings',proxy(`${local_server_nodejs}/api/v1/sethost/domain/settings`))
+    app.post('/api/v1/change/domain/settings',proxy(`${local_server_nodejs}/api/v1/change/domain/settings`))
     const vite = await createViteServer({
         server: {
             middlewareMode: true

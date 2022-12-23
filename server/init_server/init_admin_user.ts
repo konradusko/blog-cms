@@ -6,6 +6,41 @@ import crypto from 'crypto'
 import {createTime} from "../modules/create_time";
 import { config } from "../modules/read_config";
 import { Tables } from "../enums/tables_enum";
+export const create_system_user = ()=>new Promise(async (res, rej) => {
+    try {
+
+        const sql = `SELECT * FROM ${Tables.Users} WHERE login = ?`
+        const values_sql = ['system']
+        const find_system = await sqlite_database
+            ?.get_promisify(sql,values_sql)
+        if (!find_system) {
+            const password = crypto
+                .randomBytes(64)
+                .toString('hex')
+                console.log(password)
+            const sql_insert_system = `INSERT INTO ${Tables.Users} VALUES (?,?,?,?,?,?,?,?,?,?)`
+            const values_insert_system = [
+                null,
+                'system',
+                await bcrypt.hash(password, 10),
+                '',
+                createTime(),
+                Role.system,
+                false,
+                "",
+                "",
+                ""
+            ]
+            await sqlite_database
+                ?.run_promisify(sql_insert_system, values_insert_system)
+            return res(true)
+        } else {
+            return res(true)
+        }
+    } catch (error) {
+        return rej('Error creating system')
+    }
+})
 export const create_admin_user = () => new Promise(async (res, rej) => {
     try {
 

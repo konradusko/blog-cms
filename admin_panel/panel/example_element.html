@@ -1,0 +1,71 @@
+import { LitElement,  html ,unsafeCSS} from 'lit'
+import { customElement, property, query} from 'lit/decorators.js'
+import style from '../../index.css'
+import animate from '../../animate.css'
+import { Pages_settings } from '../../../interfaces/enums_pages'
+import {get_error_true_module} from '../../../modules/error_true_module'
+import {create_skeleton_module} from '../../../modules/create_skeleton_module'
+enum panelStatuses{
+  pending="pending",
+  sucess='sucess',
+  error='error'
+}
+@customElement('settingdomain-page')
+export class DomainOption extends LitElement {
+  public static styles = [unsafeCSS(style), unsafeCSS(animate)]
+  //obecna strona
+  @property()
+  smtp_status: panelStatuses =  panelStatuses.pending
+  @property()
+  standard_error_text:string = 'Wystąpił błąd podczas pobierania danych. Może być to wewnętrzny błąd serwera lub twoje połączenie z internetem.'
+  @property()
+  error_text:string = this.standard_error_text
+  changePage(e:any){
+    const route:Pages_settings = Pages_settings.main
+    const options = {
+      detail: route,
+      bubbles: true,
+      composed: true
+    };
+    this.dispatchEvent(new CustomEvent('set-Page', options))
+}
+  render() {
+    return html`
+    <div class="flex justify-center h-full animated fadeInDown">
+    <div class="flex rounded-lg shadow-lg bg-white  w-[80%] h-[98%] flex-col">
+      <div class="py-3 px-6 border-b border-gray-300 ">
+      <h5 class="text-gray-900 text-xl font-medium mb-2">Ustawienia domeny</h5>
+      <nav class="rounded-md w-full">
+      <ol class="list-reset flex">
+        <li><button @click="${this.changePage}" class="text-blue-600 hover:text-blue-700">Ustawienia systemowe</button></li>
+        <li><span class="text-gray-500 mx-2">/</span></li>
+        <li class="text-gray-500">Ustawienia domeny</li>
+      </ol>
+    </nav>
+      </div>
+      <div class="p-6 h-[80%] max-h-[100%] overflow-y-auto">
+ 
+
+
+      <div class="overflow-x-auto relative shadow-md sm:rounded-lg">
+
+      ${this.smtp_status ==  panelStatuses.pending? html`${create_skeleton_module()}`:`
+        ${this.smtp_status ==  panelStatuses.error?html`${get_error_true_module(this.error_text,()=>{
+          //tutaj pobieranie danych
+        })}`:html`Mamy pobrane`}
+      `}
+
+   
+      </div>  
+
+      </div>
+      <div class="py-3 px-6 border-t border-gray-300 text-gray-600 ">
+        Pamiętaj, że wprowadzone zmiany mają wpływ na działanie serwisu
+      </div>
+    </div>
+  </div>
+    `
+  }
+
+}
+

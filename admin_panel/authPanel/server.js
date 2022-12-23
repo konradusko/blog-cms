@@ -17,6 +17,7 @@ async function create_vite_server_node() {
     
     app.post('/admin/login',proxy(`${local_server_nodejs}/admin/login`))
     app.post('/forget/password',proxy(`${local_server_nodejs}/forget/password`))
+    
     const vite = await createViteServer({
         server: {
             middlewareMode: true

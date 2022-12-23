@@ -1,0 +1,15 @@
+export enum Pages{
+    event_log_page = "event_log_page",
+    settings_page = "settings_page",
+    accoung_page = "account_page",
+    home_page = "home_page"
+}
+export enum Pages_settings{
+    main="main",
+    domainSetting="domainSetting",
+    smtp_system_mail="smtp_system_mail",
+    smtp_newsletter="smtp_newsletter"
+}
+export interface Pages_Object {
+    [key: string]: boolean;
+  }

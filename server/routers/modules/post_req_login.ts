@@ -8,6 +8,7 @@ import { create_token_and_add_session } from "../../modules/createToken_login";
 import { config } from "../../modules/read_config";
 import { create_log } from "../../modules/create_log";
 import { Logs } from "../../enums/logs_enum";
+import { Role } from "../../enums/role_enum";
 const post_req_login:Router = Router()
 
 const validate_ajv = ajv.compile(ajv_schema_login_post)
@@ -33,6 +34,9 @@ post_req_login.post('/admin/login',async(req:Request,res:Response)=>{
         ?.get_promisify(sql_find_user ,sql_values)
         if(!user)
             return res.status(401).json({message:'Taki uzytkownik nie istnieje',error:true,redirect:false})
+        if((user as User).role == Role.system)
+            return res.status(401).json({message:'Nie można logować się do systemowego użytkownika',error:true,redirect:false})
+
         //Sprawdzam czy hasło jest podane
         if(!(await bcrypt.compare(body.password,(user as User).password)))
             return res.status(401).json({message:'Podane hasło jest błędne',error:true,redirect:false})
@@ -40,7 +44,7 @@ post_req_login.post('/admin/login',async(req:Request,res:Response)=>{
         if((user as User).confirmEmail == false)
             return res.status(200).json({message:'Proszę potwierdzić adres email',error:false,redirect:false})
         //Tworze token i dodaje go do bazy danych
-        
+ 
         const token = await create_token_and_add_session((user as User).id,(user as User).login)
         const log_message = `Użytkownik o id ${body.login} zalogował się do serwisu`
         create_log(Logs.log_in,body.login,log_message,(user as User).id)

@@ -2,11 +2,13 @@
 module.exports = {
   content: [
     "./index.html",
-    "./src/**/*.{vue,js,ts,jsx,tsx}",
-    './node_modules/tw-elements/dist/js/**/*.{js,css,min.css}'
+    "./src/**/**/**/*.{vue,js,ts,jsx,tsx}",
+    "./modules/**/**/**/*.{vue,js,ts,jsx,tsx}",
+    './node_modules/tw-elements/dist/js/**/*.{js,css,min.css}',
+    './node_modules/tailwindcss-animatecss/dist/js/**/*.{js,css,min.css}'
   ],
   theme: {
-    extend: {},
+  
   },
   plugins: [
     require('tailwindcss'),
@@ -15,6 +17,7 @@ module.exports = {
     require('@tailwindcss/forms'),
     require('@tailwindcss/line-clamp'),
     require('@tailwindcss/aspect-ratio'),
-    require('tw-elements/dist/plugin')
+    require('tw-elements/dist/plugin'),
+ 
   ],
 }

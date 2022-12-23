@@ -56,9 +56,9 @@ export const create_rate_limit = (config_router:ConfigFile_rate_limit)=>rateLimi
                     if(system_user){
                         create_log(Logs.block_ip,(system_user as User).login,message_log,(system_user as User).id)
                     }
-                    return   res.status(options.statusCode).json({message:`Twoj adres ip został tymczasowo  zablokowany`,error:true})
+                    return   res.status(options.statusCode).json({message:`Twoj adres ip został zablokowany`,error:true})
                 } catch (error) {
-                    return   res.status(options.statusCode).json({message:`Twoj adres ip został tymczasowo  zablokowany`,error:true})
+                    return   res.status(options.statusCode).json({message:`Twoj adres ip został zablokowany`,error:true})
                 }
             }else{
                 return   res.status(options.statusCode).json({message:options.message,error:true})

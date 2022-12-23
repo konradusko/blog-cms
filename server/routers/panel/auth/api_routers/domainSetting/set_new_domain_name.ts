@@ -11,7 +11,7 @@ const set_domain_settings:Router = Router()
 interface Body{
     domain:string
 }
-set_domain_settings.post('/api/v1/set/domain/settings',async(req:Request,res:Response)=>{
+set_domain_settings.post('/api/v1/sethost/domain/settings',async(req:Request,res:Response)=>{
     try {
         const body:Body = req.body
         console.log(body)

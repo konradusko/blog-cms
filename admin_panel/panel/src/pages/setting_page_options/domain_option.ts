@@ -88,7 +88,7 @@ export class DomainOption extends LitElement {
       remove_modal_are_your_sure(this.shadowRoot as ShadowRoot)
       createModal_update_changes(this.shadowRoot as ShadowRoot,'Trwa zapisywanie zmian')
       const new_host_name:string =window.location.host 
-      fetch('/api/v1/set/domain/settings',{
+      fetch('/api/v1/sethost/domain/settings',{
         method: 'POST',
         headers: {
           Accept: "application/json",
@@ -114,6 +114,40 @@ export class DomainOption extends LitElement {
          create_alert(Alert_types.error,3,"Wystąpił błąd ",this.shadowRoot as ShadowRoot)
         })
     })
+  }
+  change_http_ip_settings(e:any){
+    const type:string = e.target.getAttribute('data-type')
+    if(!type)
+      return
+      create_modal_are_your_sure(this.shadowRoot as ShadowRoot,()=>{
+        remove_modal_are_your_sure(this.shadowRoot as ShadowRoot)
+        createModal_update_changes(this.shadowRoot as ShadowRoot,'Trwa zapisywanie zmian')
+        fetch('/api/v1/change/domain/settings',{
+          method: 'POST',
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+           type:type
+          })
+        }).then((res) => res.json())
+        .then((res:Response_server)=>{
+          if(res.error){
+            remove_modal_update_changes(this.shadowRoot as ShadowRoot)
+            create_alert(Alert_types.error,3,res.message,this.shadowRoot as ShadowRoot)
+          }else{
+            this.get_domain_settings()
+            create_alert(Alert_types.sucess,3,res.message,this.shadowRoot as ShadowRoot)
+        
+          }
+        })
+        .catch((er)=>{
+        remove_modal_update_changes(this.shadowRoot as ShadowRoot)
+        create_alert(Alert_types.error,3,"Wystąpił błąd ",this.shadowRoot as ShadowRoot)
+        })
+      })
+
   }
   changePage(e:any){
     const route:Pages_settings = Pages_settings.main
@@ -164,16 +198,21 @@ export class DomainOption extends LitElement {
     </div>
     <div class="flex flex-col py-3">
         <dt class="mb-1 text-gray-500 md:text-lg dark:text-gray-400">Wymuś https</dt>
-        <dd class="text-lg font-semibold">${this.settings_data != null?html`${this.settings_data.requiredHttps == true?html`<button type="button" class="inline-block px-6 py-2 border-2 border-green-500 text-green-500 font-medium text-xs leading-tight uppercase rounded hover:bg-black hover:bg-opacity-5 focus:outline-none focus:ring-0 transition duration-150 ease-in-out">Tak</button>`:html`<button type="button" class="inline-block px-6 py-2 border-2 border-yellow-500 text-yellow-500 font-medium text-xs leading-tight uppercase rounded hover:bg-black hover:bg-opacity-5 focus:outline-none focus:ring-0 transition duration-150 ease-in-out"><strong>Nie</strong></button>`}`
+        <dd class="text-lg font-semibold">${this.settings_data != null?html`${this.settings_data.requiredHttps == true?html`<button type="button" class="inline-block px-6 py-2 border-2 border-green-500 text-green-500 font-medium text-xs leading-tight uppercase rounded hover:bg-black hover:bg-opacity-5 focus:outline-none focus:ring-0 transition duration-150 ease-in-out cursor-default">Tak</button>`:html`<button type="button" class="inline-block px-6 py-2 border-2 border-yellow-500 text-yellow-500 font-medium text-xs leading-tight uppercase rounded hover:bg-black hover:bg-opacity-5 focus:outline-none focus:ring-0 transition duration-150 ease-in-out cursor-default"><strong>Nie</strong></button>`}`
         :html`<div class="inline-block px-6 py-2.5 bg-red-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-red-700 hover:shadow-lg focus:bg-red-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-red-800 active:shadow-lg transition duration-150 ease-in-out"><strong>Brak danych</strong></div>`}</dd>
         <dd class="text-lg font-semibold mt-2">${this.settings_data != null?
-          html`<button  type="button" class="inline-block px-6 py-2.5 bg-green-500 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-green-600 hover:shadow-lg focus:bg-green-600 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-green-700 active:shadow-lg transition duration-150 ease-in-out">Zmień</button>`
+          html`<button @click="${this.change_http_ip_settings}" data-type="https" type="button" class="inline-block px-6 py-2.5 bg-green-500 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-green-600 hover:shadow-lg focus:bg-green-600 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-green-700 active:shadow-lg transition duration-150 ease-in-out">Zmień</button>`
         
         :html`<div class="inline-block px-6 py-2.5 bg-red-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-red-700 hover:shadow-lg focus:bg-red-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-red-800 active:shadow-lg transition duration-150 ease-in-out"><strong>Brak danych</strong></div>`}</dd>
     </div>
     <div class="flex flex-col pt-3">
-        <dt class="mb-1 text-gray-500 md:text-lg dark:text-gray-400">Phone number</dt>
-        <dd class="text-lg font-semibold">+00 123 456 789 / +12 345 678</dd>
+        <dt class="mb-1 text-gray-500 md:text-lg dark:text-gray-400">Blokada IP</dt>
+        <dd class="text-lg font-semibold">${this.settings_data != null?html`${this.settings_data.blockIp == true?html`<button type="button" class="inline-block px-6 py-2 border-2 border-green-500 text-green-500 font-medium text-xs leading-tight uppercase rounded hover:bg-black hover:bg-opacity-5 focus:outline-none focus:ring-0 transition duration-150 ease-in-out cursor-default">Tak</button>`:html`<button type="button" class="inline-block px-6 py-2 border-2 border-yellow-500 text-yellow-500 font-medium text-xs leading-tight uppercase rounded hover:bg-black hover:bg-opacity-5 focus:outline-none focus:ring-0 transition duration-150 ease-in-out cursor-default"><strong>Nie</strong></button>`}`
+        :html`<div class="inline-block px-6 py-2.5 bg-red-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-red-700 hover:shadow-lg focus:bg-red-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-red-800 active:shadow-lg transition duration-150 ease-in-out"><strong>Brak danych</strong></div>`}</dd>
+        <dd class="text-lg font-semibold mt-2">${this.settings_data != null?
+          html`<button @click="${this.change_http_ip_settings}" data-type="ip" type="button" class="inline-block px-6 py-2.5 bg-green-500 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-green-600 hover:shadow-lg focus:bg-green-600 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-green-700 active:shadow-lg transition duration-150 ease-in-out">Zmień</button>`
+        
+        :html`<div class="inline-block px-6 py-2.5 bg-red-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-red-700 hover:shadow-lg focus:bg-red-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-red-800 active:shadow-lg transition duration-150 ease-in-out"><strong>Brak danych</strong></div>`}</dd>
     </div>
 </dl>
         

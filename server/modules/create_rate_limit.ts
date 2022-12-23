@@ -9,6 +9,7 @@ import { createTime } from './create_time'
 import { create_log } from './create_log'
 import { Logs } from '../enums/logs_enum'
 import { User } from '../interface/user'
+import { config } from './read_config'
 export const create_rate_limit = (config_router:ConfigFile_rate_limit)=>rateLimit({
     windowMs: config_router.time_in_minutes * 60 * 1000,
 	max: config_router.max_request, 
@@ -19,6 +20,13 @@ export const create_rate_limit = (config_router:ConfigFile_rate_limit)=>rateLimi
         if(req.url == '/admin/login'){
             //jeśli próbujemy się zalogować i przekroczymy rate limit
             console.log(req.ip)
+            const sql_values_find_ip = [req.ip]
+            const sql_query_find_on_white_list = `SELECT * FROM ${Tables.WhiteList}  WHERE ip = ?`
+            const find_ip_db_white_list  =await sqlite_database?.get_promisify(sql_query_find_on_white_list,sql_values_find_ip)
+            if(find_ip_db_white_list){
+                return   res.status(options.statusCode).json({message:`Twoj adres ip został tymczasowo  zablokowany, spróbuj ponownie za ${config.login_rate_limit.time_in_minutes} minut`,error:true})
+            }
+
             //Pobrać z bazy danych informację
             const sql_query_get_data_domain = `SELECT blockIp FROM ${Tables.SystemConfig} WHERE type = ?`
             const sql_values_get_data_domain = [RoleSystemCofnig.systemConf]
@@ -27,6 +35,10 @@ export const create_rate_limit = (config_router:ConfigFile_rate_limit)=>rateLimi
                 return res.status(options.statusCode).json({message:options.message,error:true})
             if((requiredHttps as interface_SystemDomainSettings).blockIp == true){
                 try {
+
+
+                   
+
                         //dodanie do bazy danych blokowanych ip
                     const sql_insert_ip_block = `INSERT INTO ${Tables.Ip} VALUES (?,?,?)`
                     const sql_insert_ip_block_values = [
@@ -44,14 +56,14 @@ export const create_rate_limit = (config_router:ConfigFile_rate_limit)=>rateLimi
                     if(system_user){
                         create_log(Logs.block_ip,(system_user as User).login,message_log,(system_user as User).id)
                     }
-                    return   res.status(options.statusCode).json({message:"Twoj adres ip został zablokowany",error:true})
+                    return   res.status(options.statusCode).json({message:`Twoj adres ip został tymczasowo  zablokowany, spróbuj ponownie za ${config.login_rate_limit.time_in_minutes} minut`,error:true})
                 } catch (error) {
-                    return   res.status(options.statusCode).json({message:"Twoj adres ip został zablokowany",error:true})
+                    return   res.status(options.statusCode).json({message:`Twoj adres ip został tymczasowo  zablokowany, spróbuj ponownie za ${config.login_rate_limit.time_in_minutes} minut`,error:true})
                 }
             }else{
                 return   res.status(options.statusCode).json({message:options.message,error:true})
             }
         }
-        res.status(options.statusCode).json({message:options.message,error:true})
+        return res.status(options.statusCode).json({message:options.message,error:true})
     }
 })

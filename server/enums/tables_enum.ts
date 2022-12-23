@@ -3,5 +3,6 @@ export enum Tables{
    Logs="Logs",
    Smtp="Smtp",
    SystemConfig="SystemConfig",
-   Ip="Ip"
+   Ip="Ip",
+   WhiteList="WhiteList"
 }

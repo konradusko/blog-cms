@@ -16,9 +16,18 @@ export const requiredHttps = async(req:Request,res:Response,next:NextFunction)=>
   
             const find_if_check_this_route = Routers_system_to_block.find((e:string)=>req.url == e)
             if(find_if_check_this_route){
+                        //szukamy czy isnieje na bialej liscie
+                        const sql_values_find_ip = [req.ip]
+                        const sql_query_find_on_white_list = `SELECT * FROM ${Tables.WhiteList}  WHERE ip = ?`
+                        const find_ip_db_white_list  =await sqlite_database?.get_promisify(sql_query_find_on_white_list,sql_values_find_ip)
+                        if(find_ip_db_white_list){
+                            if(req.method == "GET")
+                            return res.send(`Twoje ip zostało tymczasowo zablokowane ze względu na dużą ilość błędnych zapytań. Spróbuj ponownie później`)
+                            return res.status(401).json({message:`Twoje ip zostało tymczasowo zablokowane ze względu na dużą ilość błędnych zapytań. Spróbuj ponownie później`,error:true})
+                        }
                         //teraz szukamy czy takie ip jest w bazie danych i czy jest zablokowan
                         const sql_query_find_ip = `SELECT * FROM ${Tables.Ip} WHERE ip = ?`
-                        const sql_values_find_ip = [req.ip]
+                      
                         const find_ip_db  =await sqlite_database?.get_promisify(sql_query_find_ip,sql_values_find_ip)
                         if(find_ip_db){
                             if(req.method == "GET")

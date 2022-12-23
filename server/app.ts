@@ -12,8 +12,7 @@ app.all(`*`,requiredHttps)
 import './routers/panel/auth/routers_login'
 import './modules/read_config'
 import './routers/panel/panel_api/all_api_in_one_place'
-import {page_404} from './middlewares/page_404'
-app.use('*',page_404)
+
 import fs from 'fs'
 if(!fs.existsSync('./sqlite')){
   fs.mkdirSync('./sqlite')

@@ -23,7 +23,7 @@ post_delete_smtp.post('/api/v1/delete/smtp',async(req:Request,res:Response)=>{
         const sql_values_delete = [body.type]
         try {
             await sqlite_database?.run_promisify(sql_query_delete,sql_values_delete)
-            const message_log = `Konfiguracja Smtp dla maili ${body.type == RoleSmtp.newsletter?`newslettera`:'systemowych'} została usunięta`
+            const message_log = `Konfiguracja Smtp dla maili ${body.type == RoleSmtp.client_smtp?`client_smtpa`:'systemowych'} została usunięta`
             create_log(Logs.delete_smtp_config,res.locals.user.login,message_log,res.locals.user.id)
             return res.status(200).json({message:'Konfiguracja została usunięta',error:false})
         } catch (error) {

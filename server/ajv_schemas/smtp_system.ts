@@ -8,7 +8,7 @@ export const ajv_schema_smtp = {
                 "user": { type: "string", minLength: 1, maxLength: 300 },
                 "password": { type: "string", minLength: 1, maxLength: 300 },
                 "type":{
-                    enum:[RoleSmtp.newsletter,RoleSmtp.system]
+                    enum:[RoleSmtp.client_smtp,RoleSmtp.system]
                 }
             },
             additionalProperties: false,
@@ -32,7 +32,7 @@ export const ajv_schema_delete_get_data_smtp = {
         {
             properties: {
                 "type":{
-                    enum:[RoleSmtp.newsletter,RoleSmtp.system]
+                    enum:[RoleSmtp.client_smtp,RoleSmtp.system]
                 }
             },
             additionalProperties: false,

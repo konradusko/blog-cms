@@ -7,7 +7,7 @@ export enum Role{
 
 export enum RoleSmtp{
     system="system",
-    newsletter="newsletter"
+    client_smtp="client_smtp"
 }
 
 export enum RoleSystemCofnig{

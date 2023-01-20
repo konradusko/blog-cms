@@ -5,7 +5,7 @@ export const ajv_schema_smtp_send_test_email = {
         {
             properties: {
                 "type":{
-                    enum:[RoleSmtp.newsletter,RoleSmtp.system]
+                    enum:[RoleSmtp.client_smtp,RoleSmtp.system]
                 }
             },
             additionalProperties: false,

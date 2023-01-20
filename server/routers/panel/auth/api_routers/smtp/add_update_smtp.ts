@@ -39,7 +39,7 @@ post_smtp_add_update.post('/api/v1/add/smtp',async(req:Request,res:Response)=>{
             ]
             try {
                 await sqlite_database?.run_promisify(sql_query_add_smtp,sql_values_add_smtp)
-                const message_log = `Konfiguracja Smtp dla maili ${body.type == RoleSmtp.newsletter?`newslettera`:'systemowych'} została dodana`
+                const message_log = `Konfiguracja Smtp dla maili ${body.type == RoleSmtp.client_smtp?`client_smtpa`:'systemowych'} została dodana`
                 create_log(Logs.add_smtp_config,res.locals.user.login,message_log,res.locals.user.id)
                 return res.status(200).json({message:'Konfiguracja została zapisana',error:false})
             } catch (error) {
@@ -54,7 +54,7 @@ post_smtp_add_update.post('/api/v1/add/smtp',async(req:Request,res:Response)=>{
             const sql_query_update_smtp_VALUES = [body.host,body.user,body.password,body.type]
             try {
                 await sqlite_database?.run_promisify(sql_query_update_smtp,sql_query_update_smtp_VALUES)
-                const message_log = `Konfiguracja Smtp dla maili ${body.type == RoleSmtp.newsletter?`newslettera`:'systemowych'} zostało zaktualizowane`
+                const message_log = `Konfiguracja Smtp dla maili ${body.type == RoleSmtp.client_smtp?`client_smtpa`:'systemowych'} zostało zaktualizowane`
                 create_log(Logs.update_smtp_config,res.locals.user.login,message_log,res.locals.user.id)
                 return res.status(200).json({message:'Nowa konfiguracja została zapisana',error:false})
             } catch (error) {

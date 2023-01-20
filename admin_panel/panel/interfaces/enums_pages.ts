@@ -8,7 +8,7 @@ export enum Pages_settings{
     main="main",
     domainSetting="domainSetting",
     smtp_system_mail="smtp_system_mail",
-    smtp_newsletter="smtp_newsletter"
+    smtp_client_smtp="smtp_client_smtp"
 }
 export interface Pages_Object {
     [key: string]: boolean;

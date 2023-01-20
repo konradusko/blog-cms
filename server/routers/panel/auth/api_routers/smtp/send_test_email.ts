@@ -37,13 +37,13 @@ send_test_email_post.post('/api/v1/send/test/email',async(req:Request,res:Respon
             from: '"Fred Foo 👻"',
             subject: `Blog cms ${body.type}`,
            to: (res.locals.user as User).email,
-           text: `Testowa wiadomość dla ${body.type== RoleSmtp.newsletter?`maili newsletter`:`maili systemowych`} z przykładowym linkiem do resetowania hasła ${(domain as interface_SystemDomainSettings).domain}/reset/password`
+           text: `Testowa wiadomość dla ${body.type== RoleSmtp.client_smtp?`maili client_smtp`:`maili systemowych`} z przykładowym linkiem do resetowania hasła ${(domain as interface_SystemDomainSettings).domain}/reset/password`
         }
         try {
             await transporter.sendMail(emailData)
             return res.status(200).json({message:'Mail został poprawnie wysłany!',error:false})
         } catch (error) {
-            return res.status(400).json({message:'Mail nie został wysłany, sprawdź konfiguracje SMTP',error:false})
+            return res.status(400).json({message:'Mail nie został wysłany, sprawdź konfiguracje SMTP',error:true})
         }
        
     } catch (error) {

@@ -14,7 +14,7 @@ export class SettingPage extends LitElement {
     main:true,
     domainSetting:false,
     smtp_system_mail:false,
-    smtp_newsletter:false
+    smtp_client_smtp:false
   }
   @property()
   current_page:Pages_settings = Pages_settings.main
@@ -71,7 +71,7 @@ export class SettingPage extends LitElement {
               </tr>
               <tr class="bg-white border-b dark:bg-gray-900 dark:border-gray-700">
               <th scope="row" class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-              <button data-page="${Pages_settings.smtp_newsletter}" @click="${this.change_page}" class="cursor-pointer text-[#337ab7] hover:underline mx-auto flex">Konfiguracja smtp dla newslettera</button> 
+              <button data-page="${Pages_settings.smtp_client_smtp}" @click="${this.change_page}" class="cursor-pointer text-[#337ab7] hover:underline mx-auto flex">Konfiguracja smtp dla client_smtpa</button> 
            </th>
              
               </tr>
@@ -103,7 +103,7 @@ export class SettingPage extends LitElement {
     }else if(this.current_page == Pages_settings.smtp_system_mail){
         return html`<settingsmtp-page @set-Page="${this.setPage}" .smtp_type="${Pages_settings.smtp_system_mail}"></settingsmtp-page>`
     }else{
-      return html`<settingsmtp-page @set-Page="${this.setPage}" .smtp_type="${Pages_settings.smtp_newsletter}"></settingsmtp-page>`
+      return html`<settingsmtp-page @set-Page="${this.setPage}" .smtp_type="${Pages_settings.smtp_client_smtp}"></settingsmtp-page>`
     }
   
   }
